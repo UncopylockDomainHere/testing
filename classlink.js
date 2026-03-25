@@ -205,7 +205,7 @@ function openSideMenu(category) {
   // 4 apps at 0°, 90°, 180°, 270°
 const apps = [
   createRadialButton("Action", 0, () => openSideMenu("action")),
-  createRadialButton("MC", 120, () => openSideMenu("minecraft")),
+  createRadialButton("MC", 120, () => openSideMenu("test")),
   createRadialButton("More", 240, () => openSideMenu("action")),
 ];
 

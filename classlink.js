@@ -287,12 +287,19 @@ document.addEventListener("mouseup", () => draggingMenu = false);
   btn.addEventListener("click", () => menuOpen ? closeRadialMenu() : openRadialMenu());
 
   // --- KEYBINDS ---
-document.addEventListener("keydown", e => {
-  if (e.key === "`" && isHovered) {
-    btn.remove();
-    menu.remove();
-    overlay.remove();
-    sideMenu.remove();
+  document.addEventListener("keydown", e => {
+  if (e.key === "`") {
+    launcherVisible = !launcherVisible;
+
+    if (launcherVisible) {
+      btn.style.display = "flex";
+    } else {
+      btn.style.display = "none";
+      closeRadialMenu();
+      sideMenu.style.display = "none";
+      overlay.style.display = "none";
+      iframe.src = "";
+    }
   }
 
   if (e.shiftKey && e.key === "`") {

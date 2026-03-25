@@ -287,21 +287,33 @@ document.addEventListener("mouseup", () => draggingMenu = false);
   btn.addEventListener("click", () => menuOpen ? closeRadialMenu() : openRadialMenu());
 
   // --- KEYBINDS ---
-  document.addEventListener("keydown", e => {
-    if (e.shiftKey && e.key === "`") {
-      if (launcherVisible && isHovered) {
-        launcherVisible = false;
-        btn.style.display = "none";
-        closeRadialMenu();
-        overlay.style.display = "none";
-      } else if (!launcherVisible) {
-        launcherVisible = true;
-        btn.style.display = "flex";
-      }
+document.addEventListener("keydown", e => {
+  if (e.key === "`" && isHovered) {
+    btn.remove();
+    menu.remove();
+    overlay.remove();
+    sideMenu.remove();
+  }
+
+  if (e.shiftKey && e.key === "`") {
+    if (launcherVisible && isHovered) {
+      launcherVisible = false;
+      btn.style.display = "none";
+      closeRadialMenu();
+      overlay.style.display = "none";
+    } else if (!launcherVisible) {
+      launcherVisible = true;
+      btn.style.display = "flex";
     }
-    if (e.key === "Escape" && overlay.style.display === "block") {
-      if (++escCount >= 2) { overlay.style.display = "none"; iframe.src = ""; escCount = 0; }
+  }
+
+  if (e.key === "Escape" && overlay.style.display === "block") {
+    if (++escCount >= 2) {
+      overlay.style.display = "none";
+      iframe.src = "";
+      escCount = 0;
     }
-  });
+  }
+});
 
 })();

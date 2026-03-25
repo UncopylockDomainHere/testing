@@ -177,7 +177,7 @@ function openHTMLFromURL(url) {
 
  const apps = [
   createRadialButton("NZP", 0, () => openHTMLFromURL("https://raw.githubusercontent.com/UncopylockDomainHere/nzp-team.github.io/refs/heads/main/index.html")),
-  createRadialButton("test", 60, () => openHTMLFromURL("https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html")),
+  createRadialButton("DriveMad", 60, () => openHTMLFromURL("https://raw.githubusercontent.com/gswitchgames/gswitchgames.github.io/refs/heads/tbg95/drive-mad.html)),
   createRadialButton("Eaglercraft", 120, () => openHTMLFromURL("https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html")),
   createRadialButton("DriftHunters", 240, () =>
     openHTMLFromURL("https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html")

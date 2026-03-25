@@ -181,7 +181,7 @@ function openHTMLFromURL(url) {
   createRadialButton("Eaglercraft", 120, () => openHTMLFromURL("https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html")),
   createRadialButton("Slope", 180, () => openHTMLFromURL("https://raw.githubusercontent.com/gswitchgames/gswitchgames.github.io/refs/heads/tbg95/slope.html")),
   createRadialButton("DriftHunters", 240, () => openHTMLFromURL("https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html")),
-  createRadialButton("Test", 320, () => openHTMLFromURL("https://raw.githubusercontent.com/gswitchgames/gswitchgames.github.io/refs/heads/tbg95/slope.html")),
+  createRadialButton("Test", 320, () => openHTMLFromURL("https://raw.githubusercontent.com/gswitchgames/gswitchgames.github.io/refs/heads/tbg95/slope.html"))
 ];
 
     let menuOpen = false;

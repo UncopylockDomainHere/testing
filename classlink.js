@@ -1,4 +1,3 @@
-<script>
 (function () {
 
   function init() {
@@ -332,4 +331,3 @@ function closeRadialMenu() {
 waitForBody(init);
 
 })();
-</script>

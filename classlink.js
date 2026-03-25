@@ -146,7 +146,7 @@ function openSideMenu(category) {
       { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
     ],
     test: [
-      { name: "test", url: "" }
+      { name: "test", url: "https://gn-math.dev/" }
     ]
   };
 

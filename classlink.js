@@ -1,4 +1,3 @@
-<script>
 (function () {
   if (window.__LAUNCHER__) return;
   window.__LAUNCHER__ = true;
@@ -212,7 +211,7 @@ function openSideMenu(category) {
       { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
     ],
     test: [
-      { name: "test", url: "https://gn-math.dev/" }
+      { name: "zombs", url: "https://zombsroyale.io/" }
     ],
     more: [
       { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }
@@ -393,4 +392,3 @@ document.addEventListener("mouseup", () => draggingMenu = false);
 });
 
 })();
-</script>

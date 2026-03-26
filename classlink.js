@@ -1,3 +1,4 @@
+<script>
 (function () {
   if (window.__LAUNCHER__) return;
   window.__LAUNCHER__ = true;
@@ -94,26 +95,91 @@ sideMenu.appendChild(sideList);
   }
 
   function openHTMLFromURL(url) {
-    closeRadialMenu();
-    overlay.style.display = "block";
-    iframe.src = "";
+  closeRadialMenu();
+  overlay.style.display = "block";
+  iframe.src = "";
 
-    if (url.includes("github.com")) {
-      url = url
-        .replace("github.com", "raw.githubusercontent.com")
-        .replace("/blob/", "/")
-        .replace("/refs/heads/", "/");
-    }
-
-    fetch(url)
-      .then(res => res.text())
-      .then(html => {
-        const base = `<base href="${url.substring(0, url.lastIndexOf("/") + 1)}">`;
-        const blob = new Blob([html.replace("<head>", `<head>${base}`)], { type: "text/html" });
-        iframe.src = URL.createObjectURL(blob);
-      })
-      .catch(() => { iframe.src = url; });
+  // GitHub → raw
+  if (url.includes("github.com")) {
+    url = url
+      .replace("github.com", "raw.githubusercontent.com")
+      .replace("/blob/", "/")
+      .replace("/refs/heads/", "/");
   }
+
+  fetch(url)
+    .then(res => res.text())
+    .then(html => {
+
+      const base = `<base href="${url.substring(0, url.lastIndexOf("/") + 1)}">`;
+
+      // ✅ Fix protocol-less URLs (jsDelivr etc.)
+      html = html.replace(
+        /src="\/\/([^"]+)"/g,
+        'src="https://$1"'
+      );
+
+      html = html.replace(
+        /href="\/\/([^"]+)"/g,
+        'href="https://$1"'
+      );
+
+      // ✅ Remove broken jsDelivr stats API
+      html = html.replace(
+        /https:\/\/data\.jsdelivr\.com\/v1\/stats[^"']+/g,
+        ""
+      );
+
+      // ✅ Force scripts to execute properly
+      html = html.replace(
+        /<script([^>]*)>/g,
+        (match, attrs) => {
+          if (attrs.includes("type=\"module\"")) return match;
+          return `<script${attrs} defer>`;
+        }
+      );
+
+      // 🛡 Runtime protection (VERY important for GN Math)
+      const patchScript = `
+        <script>
+          // Block bad API
+          const origFetch = window.fetch;
+          window.fetch = function(...args) {
+            if (args[0] && args[0].includes("data.jsdelivr.com/v1/stats")) {
+              return Promise.resolve(new Response("{}", { status: 200 }));
+            }
+            return origFetch.apply(this, args);
+          };
+
+          // Fix XHR too
+          const origOpen = XMLHttpRequest.prototype.open;
+          XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+            if (url && url.includes("data.jsdelivr.com/v1/stats")) {
+              return;
+            }
+            return origOpen.call(this, method, url, ...rest);
+          };
+
+          // Fix navigation inside blob
+          document.addEventListener("click", e => {
+            const a = e.target.closest("a");
+            if (a && a.href) {
+              e.preventDefault();
+              window.location.href = a.href;
+            }
+          });
+        <\/script>
+      `;
+
+      html = html.replace("<head>", `<head>${base}${patchScript}`);
+
+      const blob = new Blob([html], { type: "text/html" });
+      iframe.src = URL.createObjectURL(blob);
+    })
+    .catch(() => {
+      iframe.src = url;
+    });
+}
 
 // --- SIDE MENU LOGIC ---
 function positionSideMenu() {
@@ -147,6 +213,9 @@ function openSideMenu(category) {
     ],
     test: [
       { name: "test", url: "https://gn-math.dev/" }
+    ],
+    more: [
+      { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }
     ]
   };
 
@@ -206,7 +275,7 @@ function openSideMenu(category) {
 const apps = [
   createRadialButton("Action", 0, () => openSideMenu("action")),
   createRadialButton("MC", 120, () => openSideMenu("test")),
-  createRadialButton("More", 240, () => openSideMenu("action")),
+  createRadialButton("More", 240, () => openSideMenu("more")),
 ];
 
   function openRadialMenu() {
@@ -324,3 +393,4 @@ document.addEventListener("mouseup", () => draggingMenu = false);
 });
 
 })();
+</script>

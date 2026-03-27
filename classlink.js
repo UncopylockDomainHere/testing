@@ -232,7 +232,8 @@ function openSideMenu(category) {
     action: [
       { name: "NZP", url: "https://nzp.gay/" },
       { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
-      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
+      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
+      { name: "GunSpin", url: "https://nzp.gay/" },
     ],
     test: [
       { name: "zombs", url: "https://zombsroyale.io/" }

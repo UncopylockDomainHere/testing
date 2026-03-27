@@ -207,11 +207,11 @@ function openSideMenu(category) {
   const games = {
     action: [
       { name: "NZP", url: "https://nzp.gay/" },
-      { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
-      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
+      { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
+      { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
     ],
     test: [
-      { name: "zombs", url: "https://zombsroyale.io/" }
+      { name: "FruitNinja", url: "https://huningxin.github.io/spp.js/examples/fruitNinja/" }
     ],
     more: [
       { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }

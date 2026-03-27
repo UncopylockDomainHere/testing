@@ -206,7 +206,7 @@ function openSideMenu(category) {
 
   const games = {
     action: [
-      { name: "NZP", url: "https://m0thrak.github.io/NZ-P-Modded/" },
+      { name: "NZP", url: "https://uncopylockdomainhere.github.io/nzp-team.github.io/" },
       { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
       { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
     ],

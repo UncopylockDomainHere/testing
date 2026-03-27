@@ -210,7 +210,7 @@ function openSideMenu(category) {
       { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
       { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
       { name: "GunSpin", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/gunslinger.html" },
-      { name: "SnowRider", url: "https://github.com/UncopylockDomainHere/testing/raw/refs/heads/main/snowrider.html" },
+      { name: "SnowRider", url: "https://github.com/UncopylockDomainHere/testing/raw/refs/heads/main/snowrider.html" }
     ],
     test: [
       { name: "FruitNinja", url: "https://huningxin.github.io/spp.js/examples/fruitNinja/" }

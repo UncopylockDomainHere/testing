@@ -37,7 +37,6 @@
 
   const iframe = document.createElement("iframe");
   css(iframe, { width: "100%", height: "100%", border: "none" });
-  iframe.removeAttribute("sandbox");
   iframe.allow = "fullscreen *; gamepad *; autoplay *; clipboard-read *; clipboard-write *; microphone *; camera *;";
 
   // Close button for overlay
@@ -86,38 +85,58 @@ css(sideList, {
 });
 sideMenu.appendChild(sideList);
 
-  // --- OPEN FUNCTIONS ---
-  function openApp(url) {
-    closeRadialMenu();
-    overlay.style.display = "block";
-    iframe.src = url;
-  }
-
-  function openAppSmart(url) {
-  closeRadialMenu();
-
-  // If site is known to block iframe → open in new tab
-  if (url.includes("zombsroyale.io")) {
-    window.open(url, "_blank");
-    return;
-  }
-
+// --- AUTO SANDBOX LOADER ---
+function loadWithAutoSandbox(url) {
   overlay.style.display = "block";
+
+  // Start SAFE
+  iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups");
   iframe.src = url;
 
-  // fallback if blocked
-  setTimeout(() => {
+  let fallbackTriggered = false;
+
+  const failSafe = setTimeout(() => {
+    triggerFallback();
+  }, 2500);
+
+  function triggerFallback() {
+    if (fallbackTriggered) return;
+    fallbackTriggered = true;
+
+    console.warn("Sandbox blocked site → falling back");
+
+    iframe.removeAttribute("sandbox");
+
+    iframe.src = "about:blank";
+    setTimeout(() => {
+      iframe.src = url;
+    }, 50);
+  }
+
+  iframe.onerror = triggerFallback;
+
+  iframe.onload = () => {
+    clearTimeout(failSafe);
+
     try {
-      iframe.contentWindow.location.href;
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+      if (!doc || !doc.body || doc.body.innerHTML.length < 50) {
+        triggerFallback();
+      }
     } catch (e) {
-      overlay.style.display = "none";
-      iframe.src = "";
-      window.open(url, "_blank");
+      triggerFallback();
     }
-  }, 1000);
+  };
 }
 
-  function openHTMLFromURL(url) {
+  // --- OPEN FUNCTIONS ---
+function openApp(url) {
+  closeRadialMenu();
+  loadWithAutoSandbox(url);
+}
+
+function openHTMLFromURL(url) {
   closeRadialMenu();
   overlay.style.display = "block";
   iframe.src = "";
@@ -136,36 +155,33 @@ sideMenu.appendChild(sideList);
 
       const base = `<base href="${url.substring(0, url.lastIndexOf("/") + 1)}">`;
 
-      // ✅ Fix protocol-less URLs (jsDelivr etc.)
-      html = html.replace(
-        /src="\/\/([^"]+)"/g,
-        'src="https://$1"'
-      );
+      // Detect external scripts
+      const hasExternalScripts = /<script[^>]+src=/.test(html);
 
-      html = html.replace(
-        /href="\/\/([^"]+)"/g,
-        'href="https://$1"'
-      );
+      // Fix protocol-less URLs
+      html = html.replace(/src="\/\/([^"]+)"/g, 'src="https://$1"');
+      html = html.replace(/href="\/\/([^"]+)"/g, 'href="https://$1"');
 
-      // ✅ Remove broken jsDelivr stats API
-      html = html.replace(
-        /https:\/\/data\.jsdelivr\.com\/v1\/stats[^"']+/g,
-        ""
-      );
+      // Remove bad API
+      html = html.replace(/https:\/\/data\.jsdelivr\.com\/v1\/stats[^"']+/g, "");
 
-      // ✅ Force scripts to execute properly
-      html = html.replace(
-        /<script([^>]*)>/g,
-        (match, attrs) => {
-          if (attrs.includes("type=\"module\"")) return match;
-          return `<script${attrs} defer>`;
-        }
-      );
+      // Force scripts to run
+      html = html.replace(/<script([^>]*)>/g, (match, attrs) => {
+        if (attrs.includes("type=\"module\"")) return match;
+        return `<script${attrs} defer>`;
+      });
 
-      // 🛡 Runtime protection (VERY important for GN Math)
+      // Runtime patch
       const patchScript = `
         <script>
-          // Block bad API
+          window.__SCRIPT_FAILED__ = false;
+
+          window.addEventListener("error", function(e) {
+            if (e.target && e.target.tagName === "SCRIPT") {
+              window.__SCRIPT_FAILED__ = true;
+            }
+          }, true);
+
           const origFetch = window.fetch;
           window.fetch = function(...args) {
             if (args[0] && args[0].includes("data.jsdelivr.com/v1/stats")) {
@@ -173,34 +189,36 @@ sideMenu.appendChild(sideList);
             }
             return origFetch.apply(this, args);
           };
-
-          // Fix XHR too
-          const origOpen = XMLHttpRequest.prototype.open;
-          XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-            if (url && url.includes("data.jsdelivr.com/v1/stats")) {
-              return;
-            }
-            return origOpen.call(this, method, url, ...rest);
-          };
-
-          // Fix navigation inside blob
-          document.addEventListener("click", e => {
-            const a = e.target.closest("a");
-            if (a && a.href) {
-              e.preventDefault();
-              window.location.href = a.href;
-            }
-          });
         <\/script>
       `;
 
       html = html.replace("<head>", `<head>${base}${patchScript}`);
 
       const blob = new Blob([html], { type: "text/html" });
-      iframe.src = URL.createObjectURL(blob);
+      const blobURL = URL.createObjectURL(blob);
+
+      // --- LOAD WITH AUTO SANDBOX ---
+      loadWithAutoSandbox(blobURL);
+
+      // --- DETECT FAILURE ---
+      setTimeout(() => {
+        try {
+          const failed = iframe.contentWindow.__SCRIPT_FAILED__;
+
+          // If scripts failed OR external scripts exist → fallback
+          if (failed || hasExternalScripts) {
+            console.warn("Blob failed → switching to direct URL");
+
+            loadWithAutoSandbox(url);
+          }
+        } catch (e) {
+          // Cross-origin → fallback
+          loadWithAutoSandbox(url);
+        }
+      }, 3000);
     })
     .catch(() => {
-      iframe.src = url;
+      loadWithAutoSandbox(url);
     });
 }
 
@@ -228,15 +246,14 @@ function openSideMenu(category) {
   sideMenu.style.display = "block";
   sideList.innerHTML = "";
 
-   const games = {
-  Games: [
-    { name: "NZP", url: "https://nzp.gay/", mode: "iframe" },
-    { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html", mode: "html" },
-    { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html", mode: "html" },
-    { name: "Snow", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/snowrider.html", mode: "external" } // 👈 Unity
-  ],
-    Websites: [
-      { name: "GN Math", url: "https://uncopylockdomainhere.github.io/gn-math-DONTDMCA/", mode: "iframe" }
+  const games = {
+    action: [
+      { name: "NZP", url: "https://nzp.gay/" },
+      { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
+      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" }
+    ],
+    test: [
+      { name: "22", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/snowrider.html" }
     ],
     more: [
       { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }
@@ -255,19 +272,10 @@ function openSideMenu(category) {
 
     item.textContent = g.name;
 
-item.onclick = () => {
-  sideMenu.style.display = "none";
-
-  if (g.mode === "external") {
-    window.open(g.url, "_blank"); // 🚀 no iframe
-  }
-  else if (g.mode === "html") {
-    openHTMLFromURL(g.url); // 🧩 fetch + blob
-  }
-  else {
-    openApp(g.url); // 🌐 normal iframe
-  }
-};
+    item.onclick = () => {
+      sideMenu.style.display = "none";
+      openHTMLFromURL(g.url);
+    };
 
     sideList.appendChild(item);
   });
@@ -306,9 +314,9 @@ item.onclick = () => {
 
   // 4 apps at 0°, 90°, 180°, 270°
 const apps = [
-  createRadialButton("Games", 0, () => openSideMenu("Games")),
-  createRadialButton("Websites", 120, () => openSideMenu("Websites")),
-  createRadialButton("tests/extras", 240, () => openSideMenu("more")),
+  createRadialButton("Games", 0, () => openSideMenu("action")),
+  createRadialButton("Websites", 120, () => openSideMenu("test")),
+  createRadialButton("Extras/More", 240, () => openSideMenu("more")),
 ];
 
   function openRadialMenu() {

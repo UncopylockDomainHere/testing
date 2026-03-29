@@ -199,23 +199,7 @@ function openHTMLFromURL(url) {
 
       // --- LOAD WITH AUTO SANDBOX ---
       loadWithAutoSandbox(blobURL);
-
-      // --- DETECT FAILURE ---
-      setTimeout(() => {
-        try {
-          const failed = iframe.contentWindow.__SCRIPT_FAILED__;
-
-          // If scripts failed OR external scripts exist → fallback
-          if (failed) {
-            console.warn("Blob failed → switching to direct URL");
-
-            loadWithAutoSandbox(url);
-          }
-        } catch (e) {
-          // Cross-origin → fallback
-          loadWithAutoSandbox(url);
-        }
-      }, 120000);
+      
     })
     .catch(() => {
       loadWithAutoSandbox(url);

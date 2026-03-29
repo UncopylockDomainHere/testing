@@ -97,7 +97,7 @@ function loadWithAutoSandbox(url) {
 
   const failSafe = setTimeout(() => {
     triggerFallback();
-  }, 2500);
+  }, 6000);
 
   function triggerFallback() {
     if (fallbackTriggered) return;
@@ -206,7 +206,7 @@ function openHTMLFromURL(url) {
           const failed = iframe.contentWindow.__SCRIPT_FAILED__;
 
           // If scripts failed OR external scripts exist → fallback
-          if (failed || hasExternalScripts) {
+          if (failed) {
             console.warn("Blob failed → switching to direct URL");
 
             loadWithAutoSandbox(url);
@@ -215,7 +215,7 @@ function openHTMLFromURL(url) {
           // Cross-origin → fallback
           loadWithAutoSandbox(url);
         }
-      }, 3000);
+      }, 120000);
     })
     .catch(() => {
       loadWithAutoSandbox(url);
@@ -250,7 +250,7 @@ function openSideMenu(category) {
     action: [
       { name: "NZP", url: "https://nzp.gay/" },
       { name: "Drift", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/drift-hunters.html" },
-      { name: "Eagler", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
+      { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drivemad.html" }
     ],
     test: [

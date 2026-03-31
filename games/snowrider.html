@@ -359,13 +359,13 @@ height:screen.height?screen.height:0,browser:i,browserVersion:s,mobile:l,os:u,os
 const SAVE_CONFIG = {
     prefix: "myGame_",
     maxSlots: 5,
-    autoSaveInterval: 30000, // 30 seconds
+    autoSaveInterval: 30000,
     version: "1.0.0",
-    encryptionKey: "secret-key-123" // change this!
+    encryptionKey: "secret-key-123"
 };
 
 // ===============================
-// 🔐 SIMPLE ENCRYPTION
+// 🔐 ENCRYPTION
 // ===============================
 function encrypt(data) {
     return btoa(
@@ -390,14 +390,73 @@ function decrypt(data) {
 }
 
 // ===============================
-// 🎮 GAME STATE (EDIT THIS)
+// 🧠 FALLBACK MEMORY STORAGE
+// ===============================
+let memoryStorage = {};
+
+// ===============================
+// 💾 STORAGE LAYER (SMART)
+// ===============================
+const StorageLayer = {
+    isIframe: window !== window.parent,
+
+    save(key, value) {
+        try {
+            localStorage.setItem(key, value);
+            return true;
+        } catch (e) {
+            if (this.isIframe) {
+                window.parent.postMessage({
+                    type: "SAVE_GAME",
+                    key,
+                    value
+                }, "*");
+                return true;
+            }
+            memoryStorage[key] = value;
+            return true;
+        }
+    },
+
+    load(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            if (this.isIframe) {
+                window.parent.postMessage({
+                    type: "LOAD_GAME",
+                    key
+                }, "*");
+                return null; // async fallback
+            }
+            return memoryStorage[key] || null;
+        }
+    },
+
+    delete(key) {
+        try {
+            localStorage.removeItem(key);
+        } catch (e) {
+            if (this.isIframe) {
+                window.parent.postMessage({
+                    type: "DELETE_GAME",
+                    key
+                }, "*");
+            } else {
+                delete memoryStorage[key];
+            }
+        }
+    }
+};
+
+// ===============================
+// 🎮 GAME STATE
 // ===============================
 let gameState = {
     playerName: "Player",
     level: 1,
     health: 100,
     inventory: [],
-    playtime: 0,
     position: { x: 0, y: 0 }
 };
 
@@ -405,7 +464,7 @@ let gameState = {
 // 💾 SAVE SYSTEM
 // ===============================
 class SaveSystem {
-    static getSlotKey(slot) {
+    static getKey(slot) {
         return `${SAVE_CONFIG.prefix}slot_${slot}`;
     }
 
@@ -421,131 +480,58 @@ class SaveSystem {
             state: gameState
         };
 
-        const json = JSON.stringify(data);
-        const encrypted = encrypt(json);
+        const encrypted = encrypt(JSON.stringify(data));
+        StorageLayer.save(this.getKey(slot), encrypted);
 
-        localStorage.setItem(this.getSlotKey(slot), encrypted);
-        console.log(`Saved to slot ${slot}`);
+        console.log("Saved slot", slot);
     }
 
     static load(slot = 1) {
-        const raw = localStorage.getItem(this.getSlotKey(slot));
+        const raw = StorageLayer.load(this.getKey(slot));
         if (!raw) {
-            console.warn("No save found in slot", slot);
-            return false;
+            console.warn("No save found");
+            return;
         }
 
         const decrypted = decrypt(raw);
         if (!decrypted) {
-            console.error("Corrupted save!");
-            return false;
+            console.error("Corrupt save");
+            return;
         }
 
         const data = JSON.parse(decrypted);
-
-        if (data.version !== SAVE_CONFIG.version) {
-            console.warn("Save version mismatch!");
-        }
-
         gameState = data.state;
-        console.log(`Loaded slot ${slot}`, gameState);
-        return true;
+
+        console.log("Loaded slot", slot, gameState);
     }
 
     static delete(slot) {
-        localStorage.removeItem(this.getSlotKey(slot));
-        console.log(`Deleted slot ${slot}`);
-    }
-
-    static listSlots() {
-        let slots = [];
-
-        for (let i = 1; i <= SAVE_CONFIG.maxSlots; i++) {
-            const raw = localStorage.getItem(this.getSlotKey(i));
-            if (!raw) {
-                slots.push({ slot: i, empty: true });
-                continue;
-            }
-
-            const decrypted = decrypt(raw);
-            if (!decrypted) continue;
-
-            const data = JSON.parse(decrypted);
-
-            slots.push({
-                slot: i,
-                empty: false,
-                ...data.preview,
-                timestamp: new Date(data.timestamp).toLocaleString()
-            });
-        }
-
-        return slots;
-    }
-
-    static export(slot = 1) {
-        const data = localStorage.getItem(this.getSlotKey(slot));
-        if (!data) return null;
-
-        const blob = new Blob([data], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `save_slot_${slot}.sav`;
-        a.click();
-
-        URL.revokeObjectURL(url);
-    }
-
-    static import(file, slot = 1) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            const content = e.target.result;
-            localStorage.setItem(SaveSystem.getSlotKey(slot), content);
-            console.log("Save imported to slot", slot);
-        };
-
-        reader.readAsText(file);
+        StorageLayer.delete(this.getKey(slot));
     }
 
     static autoSave(slot = 1) {
-        setInterval(() => {
-            SaveSystem.save(slot);
-        }, SAVE_CONFIG.autoSaveInterval);
+        setInterval(() => this.save(slot), SAVE_CONFIG.autoSaveInterval);
     }
 }
 
 // ===============================
-// ▶️ START AUTO SAVE
+// 📡 RECEIVE DATA FROM PARENT
 // ===============================
-SaveSystem.autoSave(1);
+window.addEventListener("message", (event) => {
+    const msg = event.data;
+
+    if (msg.type === "LOAD_GAME_RESPONSE") {
+        const decrypted = decrypt(msg.value);
+        if (!decrypted) return;
+
+        const data = JSON.parse(decrypted);
+        gameState = data.state;
+
+        console.log("Loaded from parent iframe!");
+    }
+});
 
 // ===============================
-// 🧪 EXAMPLES
+// ▶️ AUTO SAVE
 // ===============================
-
-// Modify game state
-gameState.level = 10;
-gameState.inventory.push("Magic Sword");
-
-// Save
-// SaveSystem.save(1);
-
-// Load
-// SaveSystem.load(1);
-
-// List saves
-// console.table(SaveSystem.listSlots());
-
-// Delete
-// SaveSystem.delete(1);
-
-// Export
-// SaveSystem.export(1);
-
-// Import (use file input)
-// document.querySelector("input").addEventListener("change", e => {
-//     SaveSystem.import(e.target.files[0], 1);
-// });</script></body></html>
+SaveSystem.autoSave(1);</script></body></html>

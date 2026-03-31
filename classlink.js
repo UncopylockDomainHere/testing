@@ -422,4 +422,25 @@ document.addEventListener("mouseup", () => draggingMenu = false);
   }
 });
 
+  window.addEventListener("message", (event) => {
+    const msg = event.data;
+
+    if (msg.type === "SAVE_GAME") {
+        localStorage.setItem(msg.key, msg.value);
+    }
+
+    if (msg.type === "LOAD_GAME") {
+        const value = localStorage.getItem(msg.key);
+
+        event.source.postMessage({
+            type: "LOAD_GAME_RESPONSE",
+            value
+        }, "*");
+    }
+
+    if (msg.type === "DELETE_GAME") {
+        localStorage.removeItem(msg.key);
+    }
+});
+
 })();

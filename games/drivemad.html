@@ -881,6 +881,202 @@ quit_(code,new ExitStatus(code))}
 if(Module["preInit"]){if(typeof Module["preInit"]=="function")Module["preInit"]=[Module["preInit"]];while(Module["preInit"].length>0){Module["preInit"].pop()()}}
 var shouldRunNow=true;if(Module["noInitialRun"])shouldRunNow=false;run();
     </script>
+    <script>// ===============================
+// ⚙️ CONFIG
+// ===============================
+const SAVE_CONFIG = {
+    prefix: "myGame_",
+    maxSlots: 5,
+    autoSaveInterval: 30000, // 30 seconds
+    version: "1.0.0",
+    encryptionKey: "secret-key-123" // change this!
+};
+
+// ===============================
+// 🔐 SIMPLE ENCRYPTION
+// ===============================
+function encrypt(data) {
+    return btoa(
+        data.split("").map((char, i) =>
+            String.fromCharCode(
+                char.charCodeAt(0) ^ SAVE_CONFIG.encryptionKey.charCodeAt(i % SAVE_CONFIG.encryptionKey.length)
+            )
+        ).join("")
+    );
+}
+
+function decrypt(data) {
+    try {
+        return atob(data).split("").map((char, i) =>
+            String.fromCharCode(
+                char.charCodeAt(0) ^ SAVE_CONFIG.encryptionKey.charCodeAt(i % SAVE_CONFIG.encryptionKey.length)
+            )
+        ).join("");
+    } catch {
+        return null;
+    }
+}
+
+// ===============================
+// 🎮 GAME STATE (EDIT THIS)
+// ===============================
+let gameState = {
+    playerName: "Player",
+    level: 1,
+    health: 100,
+    inventory: [],
+    playtime: 0,
+    position: { x: 0, y: 0 }
+};
+
+// ===============================
+// 💾 SAVE SYSTEM
+// ===============================
+class SaveSystem {
+    static getSlotKey(slot) {
+        return `${SAVE_CONFIG.prefix}slot_${slot}`;
+    }
+
+    static save(slot = 1) {
+        const data = {
+            version: SAVE_CONFIG.version,
+            timestamp: Date.now(),
+            preview: {
+                level: gameState.level,
+                health: gameState.health,
+                playerName: gameState.playerName
+            },
+            state: gameState
+        };
+
+        const json = JSON.stringify(data);
+        const encrypted = encrypt(json);
+
+        localStorage.setItem(this.getSlotKey(slot), encrypted);
+        console.log(`Saved to slot ${slot}`);
+    }
+
+    static load(slot = 1) {
+        const raw = localStorage.getItem(this.getSlotKey(slot));
+        if (!raw) {
+            console.warn("No save found in slot", slot);
+            return false;
+        }
+
+        const decrypted = decrypt(raw);
+        if (!decrypted) {
+            console.error("Corrupted save!");
+            return false;
+        }
+
+        const data = JSON.parse(decrypted);
+
+        if (data.version !== SAVE_CONFIG.version) {
+            console.warn("Save version mismatch!");
+        }
+
+        gameState = data.state;
+        console.log(`Loaded slot ${slot}`, gameState);
+        return true;
+    }
+
+    static delete(slot) {
+        localStorage.removeItem(this.getSlotKey(slot));
+        console.log(`Deleted slot ${slot}`);
+    }
+
+    static listSlots() {
+        let slots = [];
+
+        for (let i = 1; i <= SAVE_CONFIG.maxSlots; i++) {
+            const raw = localStorage.getItem(this.getSlotKey(i));
+            if (!raw) {
+                slots.push({ slot: i, empty: true });
+                continue;
+            }
+
+            const decrypted = decrypt(raw);
+            if (!decrypted) continue;
+
+            const data = JSON.parse(decrypted);
+
+            slots.push({
+                slot: i,
+                empty: false,
+                ...data.preview,
+                timestamp: new Date(data.timestamp).toLocaleString()
+            });
+        }
+
+        return slots;
+    }
+
+    static export(slot = 1) {
+        const data = localStorage.getItem(this.getSlotKey(slot));
+        if (!data) return null;
+
+        const blob = new Blob([data], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `save_slot_${slot}.sav`;
+        a.click();
+
+        URL.revokeObjectURL(url);
+    }
+
+    static import(file, slot = 1) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const content = e.target.result;
+            localStorage.setItem(SaveSystem.getSlotKey(slot), content);
+            console.log("Save imported to slot", slot);
+        };
+
+        reader.readAsText(file);
+    }
+
+    static autoSave(slot = 1) {
+        setInterval(() => {
+            SaveSystem.save(slot);
+        }, SAVE_CONFIG.autoSaveInterval);
+    }
+}
+
+// ===============================
+// ▶️ START AUTO SAVE
+// ===============================
+SaveSystem.autoSave(1);
+
+// ===============================
+// 🧪 EXAMPLES
+// ===============================
+
+// Modify game state
+gameState.level = 10;
+gameState.inventory.push("Magic Sword");
+
+// Save
+// SaveSystem.save(1);
+
+// Load
+// SaveSystem.load(1);
+
+// List saves
+// console.table(SaveSystem.listSlots());
+
+// Delete
+// SaveSystem.delete(1);
+
+// Export
+// SaveSystem.export(1);
+
+// Import (use file input)
+// document.querySelector("input").addEventListener("change", e => {
+//     SaveSystem.import(e.target.files[0], 1);
+// });</script>
   </body>
 </html>
 <!-- Thanks EvilMonke#0263! -->

@@ -241,7 +241,7 @@ function openSideMenu(category) {
       { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/subwaysurfers.html" }
     ],
     test: [
-      { name: "22", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/snowrider.html" }
+      { name: "22", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/test.html" }
     ],
     more: [
       { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }

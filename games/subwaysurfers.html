@@ -99,6 +99,41 @@ sdkScript.src = "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/super-hot/poki
             google_analytics_ID();
         }, 65000);
     </script>
+
+	<script>
+// Request save data on start
+window.parent.postMessage({ type: "LOAD_GAME" }, "*");
+
+// Receive save data
+window.addEventListener("message", (event) => {
+    const data = event.data;
+
+    if (data.type === "LOAD_GAME_RESPONSE") {
+        if (data.payload) {
+            console.log("Loaded save:", data.payload);
+
+            // 🔥 Inject into Unity (IMPORTANT)
+            // You must connect this to your game's save system
+            window.savedGameData = data.payload;
+        }
+    }
+});
+
+// Hook into localStorage to capture saves
+(function () {
+    const originalSetItem = localStorage.setItem;
+
+    localStorage.setItem = function (key, value) {
+        // Send save to parent
+        window.parent.postMessage({
+            type: "SAVE_GAME",
+            payload: { key, value }
+        }, "*");
+
+        return originalSetItem.apply(this, arguments);
+    };
+})();
+</script>
 	
 </body>
 

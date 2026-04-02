@@ -9,6 +9,21 @@
   // --- HELPERS ---
   function css(el, styles) { Object.assign(el.style, styles); }
 
+const style = document.createElement('style');
+style.textContent = `
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  html {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+`;
+document.head.appendChild(style);
+
   // --- BUTTON ---
   const btn = document.createElement("div");
   css(btn, {
@@ -72,21 +87,6 @@ css(sideMenu, {
   fontFamily: "sans-serif"
 });
 document.body.appendChild(sideMenu);
-
-const style = document.createElement('style');
-style.textContent = `
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  html::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Hide scrollbar for IE, Edge and Firefox */
-  html {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
-`;
-document.head.appendChild(style);
 
 // scroll area
 const sideList = document.createElement("div");

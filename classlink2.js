@@ -444,4 +444,34 @@ document.addEventListener("mouseup", () => draggingMenu = false);
     }
 });
 
+  const SAVE_KEY = "unity_save_data";
+
+// Listen for messages from iframe
+window.addEventListener("message", (event) => {
+    const data = event.data;
+
+    if (!data || !data.type) return;
+
+    // Save game data
+    if (data.type === "SAVE_GAME") {
+        try {
+            localStorage.setItem(SAVE_KEY, JSON.stringify(data.payload));
+            console.log("Game saved");
+        } catch (e) {
+            console.warn("Save failed", e);
+        }
+    }
+
+    // Load request
+    if (data.type === "LOAD_GAME") {
+        const save = localStorage.getItem(SAVE_KEY);
+
+        const iframe = document.getElementById("gameFrame");
+        iframe.contentWindow.postMessage({
+            type: "LOAD_GAME_RESPONSE",
+            payload: save ? JSON.parse(save) : null
+        }, "*");
+    }
+});
+
 })();

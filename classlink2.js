@@ -66,7 +66,7 @@ css(sideMenu, {
   borderRadius: "14px",
   zIndex: "10002",
   display: "none",
-  overflow: "hidden",
+  overflowY: "auto",
   boxShadow: "0 8px 25px rgba(0,0,0,0.7)",
   color: "white",
   fontFamily: "sans-serif"

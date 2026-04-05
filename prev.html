@@ -1,0 +1,170 @@
+<html lang="en">
+<head>
+  <title>Serious Sam</title>
+</head>
+<body>
+</body>
+<script>
+(function () {
+  if (window.__INTRO_LOADER__) return;
+  window.__INTRO_LOADER__ = true;
+
+  /* =========================
+     🎨 STYLES
+     ========================= */
+  const style = document.createElement("style");
+  style.textContent = `
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: opacity 1s ease;
+    }
+
+    #overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #content {
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #content.show {
+      opacity: 1;
+    }
+
+#content img {
+  width: 100px;
+  height: 100px;          /* force square dimensions */
+  margin-bottom: 15px;
+
+  border-radius: 50%;     /* makes it a circle */
+  object-fit: cover;      /* prevents stretching */
+}
+
+    #content p {
+      color: white;
+      font-size: 20px;
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* =========================
+     🧱 CREATE DOM
+     ========================= */
+  const app = document.createElement("div");
+  app.id = "app";
+
+  const overlay = document.createElement("div");
+  overlay.id = "overlay";
+
+  const content = document.createElement("div");
+  content.id = "content";
+
+const IMAGE_SOURCE = "data:image/webp;base64,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"; // can be URL OR data:image/webp;base64,...
+
+const img = document.createElement("img");
+
+// Auto-handle base64 vs normal URL
+if (IMAGE_SOURCE.startsWith("data:image/")) {
+  img.src = IMAGE_SOURCE; // already embedded
+} else {
+  img.src = IMAGE_SOURCE; // normal URL
+}
+
+const text = document.createElement("p");
+text.textContent = "Unblocked by @sleepygiraffe29";
+
+content.appendChild(img);
+content.appendChild(text);
+
+  overlay.appendChild(content);
+  document.body.appendChild(app);
+  document.body.appendChild(overlay);
+
+  /* =========================
+     🌐 CDN HTML LOADER
+     ========================= */
+  const GAME_URL = ""; // 🔴 CHANGE THIS
+
+  async function loadRemoteHTML(url) {
+    try {
+      const res = await fetch(url);
+      const html = await res.text();
+
+      const container = document.createElement("div");
+      container.innerHTML = html;
+
+      // Inject into app
+      while (container.firstChild) {
+        app.appendChild(container.firstChild);
+      }
+
+      // Re-run scripts
+      const scripts = app.querySelectorAll("script");
+      for (let oldScript of scripts) {
+        const newScript = document.createElement("script");
+
+        if (oldScript.src) {
+          newScript.src = new URL(oldScript.src, url).href;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+
+        oldScript.replaceWith(newScript);
+      }
+
+      console.log("CDN content loaded");
+    } catch (err) {
+      console.error("Failed to load HTML:", err);
+    }
+  }
+
+  /* =========================
+     🎬 INTRO TIMELINE
+     ========================= */
+  setTimeout(() => {
+    // Fade IN
+    content.classList.add("show");
+
+    setTimeout(() => {
+      // Fade OUT text
+      content.classList.remove("show");
+
+      setTimeout(() => {
+        // Fade OUT overlay
+        overlay.classList.add("hidden");
+
+        // ✅ LOAD CDN ONLY AFTER INTRO FINISHES
+        loadRemoteHTML(GAME_URL);
+
+      }, 3000); // black screen hold
+
+    }, 1000); // visible time
+
+  }, 2000); // initial delay
+
+})();
+</script>
+</html>

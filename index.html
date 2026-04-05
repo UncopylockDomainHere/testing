@@ -1,68 +1,154 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>CDN Switcher</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-    }
-    #app {
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
+  <title>Serious Sam</title>
 </head>
 <body>
-
-<div id="app"></div>
-
+</body>
 <script>
-const FIRST_URL = "https://example.com/first.html";   // 🔴 change
-const SECOND_URL = "https://example.com/second.html"; // 🔴 change
+(function () {
+  if (window.__INTRO_LOADER__) return;
+  window.__INTRO_LOADER__ = true;
 
-const app = document.getElementById("app");
-
-// Load HTML into container
-async function loadHTML(url) {
-  const res = await fetch(url);
-  const html = await res.text();
-
-  const container = document.createElement("div");
-  container.innerHTML = html;
-
-  // Clear previous content (this removes first CDN)
-  app.innerHTML = "";
-
-  // Add new content
-  while (container.firstChild) {
-    app.appendChild(container.firstChild);
-  }
-
-  // Re-run scripts
-  const scripts = app.querySelectorAll("script");
-  for (let oldScript of scripts) {
-    const newScript = document.createElement("script");
-
-    if (oldScript.src) {
-      newScript.src = new URL(oldScript.src, url).href;
-    } else {
-      newScript.textContent = oldScript.textContent;
+  /* =========================
+     🎨 STYLES
+     ========================= */
+  const style = document.createElement("style");
+  style.textContent = `
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
     }
 
-    oldScript.replaceWith(newScript);
+    #app {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: opacity 1s ease;
+    }
+
+    #overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #content {
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #content.show {
+      opacity: 1;
+    }
+
+    #content img {
+      width: 100px;
+      margin-bottom: 15px;
+    }
+
+    #content p {
+      color: white;
+      font-size: 20px;
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* =========================
+     🧱 CREATE DOM
+     ========================= */
+  const app = document.createElement("div");
+  app.id = "app";
+
+  const overlay = document.createElement("div");
+  overlay.id = "overlay";
+
+  const content = document.createElement("div");
+  content.id = "content";
+
+  content.innerHTML = `
+    <img src="https://cdn.discordapp.com/avatars/904478892826443776/1d41a224d56e65c99130480d4049e06a.webp?size=160">
+    <p>made by @sleepygiraffe29</p>
+  `;
+
+  overlay.appendChild(content);
+  document.body.appendChild(app);
+  document.body.appendChild(overlay);
+
+  /* =========================
+     🌐 CDN HTML LOADER
+     ========================= */
+  const GAME_URL = ""; // 🔴 CHANGE THIS
+
+  async function loadRemoteHTML(url) {
+    try {
+      const res = await fetch(url);
+      const html = await res.text();
+
+      const container = document.createElement("div");
+      container.innerHTML = html;
+
+      // Inject into app
+      while (container.firstChild) {
+        app.appendChild(container.firstChild);
+      }
+
+      // Re-run scripts
+      const scripts = app.querySelectorAll("script");
+      for (let oldScript of scripts) {
+        const newScript = document.createElement("script");
+
+        if (oldScript.src) {
+          newScript.src = new URL(oldScript.src, url).href;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+
+        oldScript.replaceWith(newScript);
+      }
+
+      console.log("CDN content loaded");
+    } catch (err) {
+      console.error("Failed to load HTML:", err);
+    }
   }
-}
 
-// Load first HTML
-loadHTML(FIRST_URL);
+  /* =========================
+     🎬 INTRO TIMELINE
+     ========================= */
+  setTimeout(() => {
+    // Fade IN
+    content.classList.add("show");
 
-// After 5 seconds → replace with second HTML
-setTimeout(() => {
-  loadHTML(SECOND_URL);
-}, 5000);
+    setTimeout(() => {
+      // Fade OUT text
+      content.classList.remove("show");
+
+      setTimeout(() => {
+        // Fade OUT overlay
+        overlay.classList.add("hidden");
+
+        // ✅ LOAD CDN ONLY AFTER INTRO FINISHES
+        loadRemoteHTML(GAME_URL);
+
+      }, 3000); // black screen hold
+
+    }, 1000); // visible time
+
+  }, 2000); // initial delay
+
+})();
 </script>
-
-</body>
 </html>

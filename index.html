@@ -1,1 +1,68 @@
-e
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CDN Switcher</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const FIRST_URL = "https://example.com/first.html";   // 🔴 change
+const SECOND_URL = "https://example.com/second.html"; // 🔴 change
+
+const app = document.getElementById("app");
+
+// Load HTML into container
+async function loadHTML(url) {
+  const res = await fetch(url);
+  const html = await res.text();
+
+  const container = document.createElement("div");
+  container.innerHTML = html;
+
+  // Clear previous content (this removes first CDN)
+  app.innerHTML = "";
+
+  // Add new content
+  while (container.firstChild) {
+    app.appendChild(container.firstChild);
+  }
+
+  // Re-run scripts
+  const scripts = app.querySelectorAll("script");
+  for (let oldScript of scripts) {
+    const newScript = document.createElement("script");
+
+    if (oldScript.src) {
+      newScript.src = new URL(oldScript.src, url).href;
+    } else {
+      newScript.textContent = oldScript.textContent;
+    }
+
+    oldScript.replaceWith(newScript);
+  }
+}
+
+// Load first HTML
+loadHTML(FIRST_URL);
+
+// After 5 seconds → replace with second HTML
+setTimeout(() => {
+  loadHTML(SECOND_URL);
+}, 5000);
+</script>
+
+</body>
+</html>

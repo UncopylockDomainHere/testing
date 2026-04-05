@@ -248,6 +248,7 @@ function openSideMenu(category) {
   const games = {
     action: [
       { name: "NZP", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/test.html" },
+      { name: "SeriousSam", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/serioussam.html" },
       { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drifthunters.html" },
       { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drivemad.html" },

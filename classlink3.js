@@ -254,6 +254,7 @@ function openSideMenu(category) {
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drivemad.html" },
       { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/snowrider.html" },
       { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/slope.html" },
+      { name: "BindingOfIsaac", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/binding.html" },
       { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/subwaysurfers.html" },
       { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/buckshot.html" }
     ],

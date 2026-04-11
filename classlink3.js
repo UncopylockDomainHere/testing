@@ -81,7 +81,7 @@ css(sideMenu, {
   borderRadius: "14px",
   zIndex: "10002",
   display: "none",
-  overflowY: "auto",
+  overflowY: "none",
   boxShadow: "0 8px 25px rgba(0,0,0,0.7)",
   color: "white",
   fontFamily: "sans-serif"
@@ -256,7 +256,11 @@ function openSideMenu(category) {
       { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/slope.html" },
       { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/subwaysurfers.html" },
       { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/buckshot.html" },
-      { name: "BindingOfIsaac", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/bindingofisaac.html" }
+      { name: "BindingOfIsaac", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/bindingofisaac.html" },
+      { name: "UltraKill", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/ultrakill.html" },
+      { name: "PizzaTower", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/pizzatower.html" },
+      { name: "R.E.P.O", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/repo.html" }
+      
     ],
     test: [
       { name: "22", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/test.html" }

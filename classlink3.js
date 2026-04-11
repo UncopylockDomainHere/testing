@@ -247,15 +247,15 @@ function openSideMenu(category) {
 
   const games = {
     action: [
-      { name: "NZP", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/test.html" },
-      { name: "SeriousSam", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/serioussam.html" },
+      { name: "NZP", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/nzp.html" },
+      { name: "SeriousSam", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/ssam.html" },
       { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drifthunters.html" },
       { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drivemad.html" },
       { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/snowrider.html" },
       { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/slope.html" },
       { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/subwaysurfers.html" },
-      { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/buckshot.html" }
+      { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/buckshot.html" }
     ],
     test: [
       { name: "22", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/test.html" }

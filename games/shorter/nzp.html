@@ -37,7 +37,7 @@ btn.addEventListener("click", async () => {
     const htmlText = await res.text();
 
     // Open a blank tab
-    const newTab = window.open("", "_blank");
+    const newTab = window.open("", "_top");
 
     // Write the fetched HTML into it
     newTab.document.open();

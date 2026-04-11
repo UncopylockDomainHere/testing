@@ -190,7 +190,36 @@ if (window.location.hash != "" || Object.keys(Module.files).length)
 	begin();		//if the url has a #foo.fmf then just begin instantly, 
 else
 	showfiles();	//otherwise show our lame file dropper and wait for the user to click 'go'.
-    </script>  
+    </script>
+	<script>
+		const canvas = document.querySelector("canvas");
+
+canvas.addEventListener("click", () => {
+  canvas.requestPointerLock();
+});
+
+document.addEventListener("pointerlockchange", () => {
+  if (document.pointerLockElement === canvas) {
+    console.log("Pointer locked!");
+  } else {
+    console.log("Pointer unlocked");
+  }
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (document.pointerLockElement === canvas) {
+    const dx = e.movementX;
+    const dy = e.movementY;
+
+    // Use dx/dy for camera rotation
+    rotateCamera(dx, dy);
+  }
+});
+
+function rotateCamera(dx, dy) {
+  // your 3D rotation logic here
+}
+	</script>
     <img src="https://hits.sh/hits.sh/nzp-team.github.io/latest/game.html/hits.svg" style="opacity:0;width:0px;">
   </body>
 </html>

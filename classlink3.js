@@ -252,9 +252,9 @@ function openSideMenu(category) {
       { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/drifthunters.html" },
       { name: "Eaglercraft", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/eaglercraft.html" },
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/drivemad.html" },
-      { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/snowrider.html" },
+      { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/snowrider.html" },
       { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/slope.html" },
-      { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/subwaysurfers.html" },
+      { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/subwaysurfers.html" },
       { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/buckshot.html" }
     ],
     test: [

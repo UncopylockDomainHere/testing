@@ -250,7 +250,7 @@ function openSideMenu(category) {
       { name: "NZP", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/nzp.html" },
       { name: "SeriousSam", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/ssam.html" },
       { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drifthunters.html" },
-      { name: "Eaglercraft", url: "https://raw.githubusercontent.com/v10letfur/Eaglercraft-X-1.8.8/refs/heads/main/EaglercraftX_1.8_u53_Offline_Signed.html" },
+      { name: "Eaglercraft", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/eaglercraft.html" },
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/drivemad.html" },
       { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/snowrider.html" },
       { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/slope.html" },

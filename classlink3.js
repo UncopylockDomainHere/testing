@@ -91,7 +91,7 @@ document.body.appendChild(sideMenu);
 // scroll area
 const sideList = document.createElement("div");
 css(sideList, {
-  height: "80%",
+  height: "90%",
   overflowY: "auto",
   padding: "10px",
   display: "flex",

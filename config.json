@@ -1,6 +1,7 @@
 {
   "code": "A1B2C",
-  "script": "(function () {
+  "script": 
+  "(function () {
   if (window.__LAUNCHER__) return;
   window.__LAUNCHER__ = true;
 

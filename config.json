@@ -1,24 +1,6 @@
 {
   "code": "A1B2C",
-  "script": 
-  "(function () {
-  if (window.__LAUNCHER__) return;
-  window.__LAUNCHER__ = true;
-
-  // --- STATE ---
-  let isDragging = false, vx = 0, vy = 0, lastX = 0, lastY = 0;
-  let launcherVisible = true, isHovered = false, menuOpen = false, escCount = 0;
-
-  // --- HELPERS ---
-  function css(el, styles) { Object.assign(el.style, styles); }
-
-const style = document.createElement('style');
-style.textContent = `
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  html::-webkit-scrollbar {
-    display: none;
-  }
-
+  "script": "(function () {if (window.__LAUNCHER__) return;window.__LAUNCHER__ = true;let isDragging = false, vx = 0, vy = 0, lastX = 0, lastY = 0;let launcherVisible = true, isHovered = false, menuOpen = false, escCount = 0;function css(el, styles) { Object.assign(el.style, styles); }const style = document.createElement('style');style.textContent = `html::-webkit-scrollbar {display: none;}
   /* Hide scrollbar for IE, Edge and Firefox */
   html {
     -ms-overflow-style: none;  /* IE and Edge */

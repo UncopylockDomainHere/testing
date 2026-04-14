@@ -254,12 +254,12 @@ function openSideMenu(category) {
       { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/drivemad.html" },
       { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/snowrider.html" },
       { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/slope.html" },
-      { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/subwaysurfers.html" },
-      { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/buckshot.html" },
+      { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/subwaysurfers.html" },
+      { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/buckshot.html" },
       { name: "BindingOfIsaac", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/bindingofisaac.html" },
-      { name: "UltraKill", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/ultrakill.html" },
-      { name: "PizzaTower", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/pizzatower.html" },
-      { name: "R.E.P.O", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/repo.html" }
+      { name: "UltraKill", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/ultrakill.html" },
+      { name: "PizzaTower", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/pizzatower.html" },
+      { name: "R.E.P.O", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/repo.html" }
       
     ],
     test: [

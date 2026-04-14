@@ -7,11 +7,11 @@
 <body>
 
 <script>
-const GAME_URL = "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/snowrider.html";
-
+// Create button
 const btn = document.createElement("button");
-btn.innerText = "Play Game (Forced HTML Load)";
+btn.innerText = "Open HTML Page";
 
+// Apply your exact styling
 Object.assign(btn.style, {
   position: "fixed",
   top: "50%",
@@ -27,32 +27,27 @@ Object.assign(btn.style, {
   borderRadius: "10px"
 });
 
-btn.addEventListener("click", async () => {
-  try {
-    const res = await fetch(GAME_URL);
-    let html = await res.text();
+// Click event
+btn.onclick = () => {
+  const newWindow = window.open("about:blank", "_blank");
 
-    // Inject <base> so relative paths work
-    const baseTag = `<base href="${GAME_URL}">`;
+  // 🔁 Replace this with your .html file
+  const htmlURL = "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/snowrider.html";
 
-    if (html.includes("<head>")) {
-      html = html.replace("<head>", `<head>${baseTag}`);
-    } else {
-      html = baseTag + html;
-    }
+  fetch(htmlURL)
+    .then(res => res.text())
+    .then(html => {
+      newWindow.document.open();
+      newWindow.document.write(html);
+      newWindow.document.close();
+    })
+    .catch(err => {
+      newWindow.document.write("<h1>Failed to load HTML</h1>");
+      console.error(err);
+    });
+};
 
-    const newTab = window.open("", "_blank");
-
-    newTab.document.open();
-    newTab.document.write(html);
-    newTab.document.close();
-
-  } catch (err) {
-    console.error(err);
-    alert("Failed to load game.");
-  }
-});
-
+// Add button to page
 document.body.appendChild(btn);
 </script>
 

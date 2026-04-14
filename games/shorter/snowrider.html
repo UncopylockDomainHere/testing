@@ -9,11 +9,9 @@
 <script>
 const GAME_URL = "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/snowrider.html";
 
-// Create button
 const btn = document.createElement("button");
-btn.innerText = "Play Game (Full Screen)";
+btn.innerText = "Play Game (Forced HTML Load)";
 
-// Style
 Object.assign(btn.style, {
   position: "fixed",
   top: "50%",
@@ -29,12 +27,32 @@ Object.assign(btn.style, {
   borderRadius: "10px"
 });
 
-// Click → open game normally (scripts will work)
-btn.addEventListener("click", () => {
-  window.open(GAME_URL, "_blank");
+btn.addEventListener("click", async () => {
+  try {
+    const res = await fetch(GAME_URL);
+    let html = await res.text();
+
+    // Inject <base> so relative paths work
+    const baseTag = `<base href="${GAME_URL}">`;
+
+    if (html.includes("<head>")) {
+      html = html.replace("<head>", `<head>${baseTag}`);
+    } else {
+      html = baseTag + html;
+    }
+
+    const newTab = window.open("", "_blank");
+
+    newTab.document.open();
+    newTab.document.write(html);
+    newTab.document.close();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load game.");
+  }
 });
 
-// Add button
 document.body.appendChild(btn);
 </script>
 

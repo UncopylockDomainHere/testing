@@ -7,14 +7,13 @@
 <body>
 
 <script>
-// URL to your raw HTML file
 const GAME_URL = "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/snowrider.html";
 
 // Create button
 const btn = document.createElement("button");
 btn.innerText = "Play Game (Full Screen)";
 
-// Style (optional)
+// Style
 Object.assign(btn.style, {
   position: "fixed",
   top: "50%",
@@ -30,27 +29,12 @@ Object.assign(btn.style, {
   borderRadius: "10px"
 });
 
-// On click → fetch HTML → open new tab → inject it
-btn.addEventListener("click", async () => {
-  try {
-    const res = await fetch(GAME_URL);
-    const htmlText = await res.text();
-
-    // Open a blank tab
-    const newTab = window.open("", "_blank");
-
-    // Write the fetched HTML into it
-    newTab.document.open();
-    newTab.document.write(htmlText);
-    newTab.document.close();
-
-  } catch (err) {
-    alert("Failed to load game.");
-    console.error(err);
-  }
+// Click → open game normally (scripts will work)
+btn.addEventListener("click", () => {
+  window.open(GAME_URL, "_blank");
 });
 
-// Add button to page
+// Add button
 document.body.appendChild(btn);
 </script>
 

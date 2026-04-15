@@ -159,9 +159,9 @@ const apps = [
         icon: "https://mir-s3-cdn-cf.behance.net/projects/404/cf0349247119641.Y3JvcCw4NjIsNjc1LDE2OCww.jpg"
     },
     {
-        name: "Tiny Fishing",
-        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/tinyfishing.html",
-        icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUSaM-xzGGbpALJmUrsgJZto33nfHvO5YNpg&s"
+        name: "Gun Spin",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/gunspin.html",
+        icon: "https://sc.filehippo.net/images/t_app-icon-l/p/39d0a468-21ab-466d-a65b-5585c02dd7ad/15864794/gunspin-logo"
     },
     {
         name: "Cookie Clicker",

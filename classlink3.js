@@ -1,499 +1,191 @@
-(function () {
-  if (window.__LAUNCHER__) return;
-  window.__LAUNCHER__ = true;
-
-  // --- STATE ---
-  let isDragging = false, vx = 0, vy = 0, lastX = 0, lastY = 0;
-  let launcherVisible = true, isHovered = false, menuOpen = false, escCount = 0;
-
-  // --- HELPERS ---
-  function css(el, styles) { Object.assign(el.style, styles); }
-
-const style = document.createElement('style');
+// Create base styles
+const style = document.createElement("style");
 style.textContent = `
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  html::-webkit-scrollbar {
-    display: none;
-  }
+    body {
+        margin: 0;
+        background: #0f172a;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
 
-  /* Hide scrollbar for IE, Edge and Firefox */
-  html {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 10%);
+        gap: 8%;
+        padding: 20px;
+        justify-content: start; /* LEFT aligned like Android */
+        align-content: start;
+    }
+
+    .app-container {
+        text-align: center;
+        width: 80px;
+    }
+
+    .app-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        border: none;
+        background: linear-gradient(145deg, #1e293b, #334155);
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 5px 5px 10px #020617,
+                    -5px -5px 10px #1e293b;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        padding: 0; /* remove spacing */
+    }
+
+    .app-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .app-btn:active {
+        transform: scale(0.95);
+        box-shadow: inset 3px 3px 6px #020617,
+                    inset -3px -3px 6px #1e293b;
+    }
+
+    .label {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #94a3b8;
+        word-wrap: break-word;
+    }
 `;
 document.head.appendChild(style);
 
-  // --- BUTTON ---
-  const btn = document.createElement("div");
-  css(btn, {
-    position: "fixed", width: "70px", height: "70px",
-    borderRadius: "50%", background: "#2c2c2c",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    cursor: "pointer", zIndex: "10001", left: "8%", top: "10%",
-    userSelect: "none", boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
-    transition: "transform 0.2s ease, box-shadow 0.2s ease"
-  });
+// Create grid container
+const grid = document.createElement("div");
+grid.className = "grid";
+document.body.appendChild(grid);
 
-  const img = document.createElement("img");
-  img.src = "https://myapps.classlink.com/assets/images/classlink-logo-invert.svg";
-  css(img, { width: "60%", height: "60%", pointerEvents: "none" });
-  btn.appendChild(img);
-  document.body.appendChild(btn);
-
-  // --- MENU CONTAINER ---
-  const menu = document.createElement("div");
-  css(menu, { position: "fixed", width: "200px", height: "200px", pointerEvents: "none", zIndex: "10000" });
-  document.body.appendChild(menu);
-
-  // --- OVERLAY + IFRAME ---
-  const overlay = document.createElement("div");
-  css(overlay, { position: "fixed", inset: "0", background: "black", display: "none", zIndex: "9999" });
-
-  const iframe = document.createElement("iframe");
-  css(iframe, { width: "100%", height: "100%", border: "none" });
-  iframe.allow = "fullscreen *; gamepad *; autoplay *; clipboard-read *; clipboard-write *; microphone *; camera *;";
-
-  // Close button for overlay
-  const closeBtn = document.createElement("div");
-  css(closeBtn, {
-    position: "absolute", top: "10px", right: "16px",
-    color: "white", fontSize: "28px", cursor: "pointer",
-    zIndex: "10002", userSelect: "none", opacity: "0.7",
-    transition: "opacity 0.2s"
-  });
-  closeBtn.textContent = "✕";
-  closeBtn.onmouseenter = () => closeBtn.style.opacity = "1";
-  closeBtn.onmouseleave = () => closeBtn.style.opacity = "0.7";
-  closeBtn.onclick = () => { overlay.style.display = "none"; iframe.src = ""; escCount = 0; };
-
-  overlay.appendChild(iframe);
-  overlay.appendChild(closeBtn);
-  document.body.appendChild(overlay);
-
-// --- SIDE MENU ---
-const sideMenu = document.createElement("div");
-css(sideMenu, {
-  position: "fixed",
-  width: "260px",
-  height: "320px",
-  background: "#1e1e1e",
-  borderRadius: "14px",
-  zIndex: "10002",
-  display: "none",
-  overflowY: "none",
-  boxShadow: "0 8px 25px rgba(0,0,0,0.7)",
-  color: "white",
-  fontFamily: "sans-serif"
-});
-document.body.appendChild(sideMenu);
-
-// scroll area
-const sideList = document.createElement("div");
-css(sideList, {
-  height: "90%",
-  overflowY: "auto",
-  padding: "10px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px"
-});
-sideMenu.appendChild(sideList);
-
-// --- AUTO SANDBOX LOADER ---
-function loadWithAutoSandbox(url) {
-  overlay.style.display = "block";
-
-  // Start SAFE
-  iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups");
-  iframe.src = url;
-
-  let fallbackTriggered = false;
-
-  const failSafe = setTimeout(() => {
-    triggerFallback();
-  }, 6000);
-
-  function triggerFallback() {
-    if (fallbackTriggered) return;
-    fallbackTriggered = true;
-
-    console.warn("Sandbox blocked site → falling back");
-
-    iframe.removeAttribute("sandbox");
-
-    iframe.src = "about:blank";
-    setTimeout(() => {
-      iframe.src = url;
-    }, 50);
-  }
-
-  iframe.onerror = triggerFallback;
-
-  iframe.onload = () => {
-    clearTimeout(failSafe);
-
-    try {
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-
-      if (!doc || !doc.body || doc.body.innerHTML.length < 50) {
-        triggerFallback();
-      }
-    } catch (e) {
-      triggerFallback();
-    }
-  };
-}
-
-  // --- OPEN FUNCTIONS ---
-function openApp(url) {
-  closeRadialMenu();
-  loadWithAutoSandbox(url);
-}
-
-function openHTMLFromURL(url) {
-  closeRadialMenu();
-  overlay.style.display = "block";
-  iframe.src = "";
-
-  // GitHub → raw
-  if (url.includes("github.com")) {
-    url = url
-      .replace("github.com", "raw.githubusercontent.com")
-      .replace("/blob/", "/")
-      .replace("/refs/heads/", "/");
-  }
-
-  fetch(url)
-    .then(res => res.text())
-    .then(html => {
-
-      const base = `<base href="${url.substring(0, url.lastIndexOf("/") + 1)}">`;
-
-      // Detect external scripts
-      const hasExternalScripts = /<script[^>]+src=/.test(html);
-
-      // Fix protocol-less URLs
-      html = html.replace(/src="\/\/([^"]+)"/g, 'src="https://$1"');
-      html = html.replace(/href="\/\/([^"]+)"/g, 'href="https://$1"');
-
-      // Remove bad API
-      html = html.replace(/https:\/\/data\.jsdelivr\.com\/v1\/stats[^"']+/g, "");
-
-      // Force scripts to run
-      html = html.replace(/<script([^>]*)>/g, (match, attrs) => {
-        if (attrs.includes("type=\"module\"")) return match;
-        return `<script${attrs} defer>`;
-      });
-
-      // Runtime patch
-      const patchScript = `
-        <script>
-          window.__SCRIPT_FAILED__ = false;
-
-          window.addEventListener("error", function(e) {
-            if (e.target && e.target.tagName === "SCRIPT") {
-              window.__SCRIPT_FAILED__ = true;
-            }
-          }, true);
-
-          const origFetch = window.fetch;
-          window.fetch = function(...args) {
-            if (args[0] && args[0].includes("data.jsdelivr.com/v1/stats")) {
-              return Promise.resolve(new Response("{}", { status: 200 }));
-            }
-            return origFetch.apply(this, args);
-          };
-        <\/script>
-      `;
-
-      html = html.replace("<head>", `<head>${base}${patchScript}`);
-
-      const blob = new Blob([html], { type: "text/html" });
-      const blobURL = URL.createObjectURL(blob);
-
-      // --- LOAD WITH AUTO SANDBOX ---
-      loadWithAutoSandbox(blobURL);
-      
-    })
-    .catch(() => {
-      loadWithAutoSandbox(url);
-    });
-}
-
-// --- SIDE MENU LOGIC ---
-function positionSideMenu() {
-  const rect = btn.getBoundingClientRect();
-
-  let left = rect.right + 12;
-  let top = rect.top;
-
-  if (left + 260 > window.innerWidth) {
-    left = rect.left - 260 - 12;
-  }
-
-  if (top + 320 > window.innerHeight) {
-    top = window.innerHeight - 330;
-  }
-
-  sideMenu.style.left = left + "px";
-  sideMenu.style.top = top + "px";
-}
-
-function openSideMenu(category) {
-  positionSideMenu();
-  sideMenu.style.display = "block";
-  sideList.innerHTML = "";
-
-  const games = {
-    action: [
-      { name: "NZP", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/nzp.html" },
-      { name: "SeriousSam", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/ssam.html" },
-      { name: "DriftHunters", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/drifthunters.html" },
-      { name: "Eaglercraft", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/eaglercraft.html" },
-      { name: "Drivemad", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/drivemad.html" },
-      { name: "SnowRider", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/snowrider.html" },
-      { name: "Slope", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/slope.html" },
-      { name: "SubwaySurfers", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/subwaysurfers.html" },
-      { name: "BuckshotRoulette", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/buckshot.html" },
-      { name: "BindingOfIsaac", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/shorter/bindingofisaac.html" },
-      { name: "UltraKill", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/ultrakill.html" },
-      { name: "PizzaTower", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/pizzatower.html" },
-      { name: "R.E.P.O", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/repo.html" }
-      
-    ],
-    test: [
-      { name: "22", url: "https://raw.githubusercontent.com/UncopylockDomainHere/testing/refs/heads/main/games/test.html" }
-    ],
-    more: [
-      { name: "test2", url: "https://raw.githubusercontent.com/genizy/web-port/refs/heads/main/buckshot-roulette/index.html" }
-    ]
-  };
-
-  (games[category] || []).forEach(g => {
-    const item = document.createElement("div");
-    css(item, {
-      padding: "10px",
-      background: "#2c2c2c",
-      borderRadius: "8px",
-      cursor: "pointer",
-      textAlign: "center"
-    });
-
-    item.textContent = g.name;
-
-    item.onclick = () => {
-      sideMenu.style.display = "none";
-      openHTMLFromURL(g.url);
-    };
-
-    sideList.appendChild(item);
-  });
-}
-
-  // --- RADIAL BUTTONS ---
-  function createRadialButton(label, angle, action, color = "#2c2c2c") {
-    const b = document.createElement("div");
-    css(b, {
-      position: "absolute", left: "-15%", top: "-10%",
-      width: "54px", height: "54px", borderRadius: "50%",
-      background: `linear-gradient(145deg, ${color}, #1a1a1a)`,
-      color: "white", display: "flex", alignItems: "center",
-      justifyContent: "center", fontSize: "13px", fontWeight: "bold",
-      fontFamily: "sans-serif", cursor: "pointer", pointerEvents: "auto",
-      opacity: "0", transform: "translate(0px,0px) scale(0.3)",
-      filter: "blur(6px)", boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
-      transition: "transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, filter 0.3s ease"
-    });
-    b.textContent = label;
-    b.onclick = action;
-    b.dataset.angle = angle;
-
-    b.onmouseenter = () => {
-      const cur = b.style.transform;
-      b._baseTransform = cur;
-      b.style.transform = cur + " scale(1.2)";
-    };
-    b.onmouseleave = () => {
-      if (b._baseTransform) b.style.transform = b._baseTransform;
-    };
-
-    menu.appendChild(b);
-    return b;
-  }
-
-  // 4 apps at 0°, 90°, 180°, 270°
+// App list
 const apps = [
-  createRadialButton("Games", 0, () => openSideMenu("action")),
-  createRadialButton("Websites", 120, () => openSideMenu("test")),
-  createRadialButton("Extras/More", 240, () => openSideMenu("more")),
+    {
+        name: "NZ:P",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/test.html",
+        icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNIW09jfdkiAfWAQ81HXZaDwktgfgywV4p5w&s"
+    },
+    {
+        name: "Serious Sam",
+        url: "https://cdn.jsdelivr.net/gh/prokid8467-collab/serious/local/index.html",
+        icon: "https://i.ebayimg.com/00/s/MTI1MFgxMjAw/z/KCwAAOSwYwJlINmB/$_57.JPG?set_id=880000500F"
+    },
+    {
+        name: "Drift Hunters",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/drifthunters.html",
+        icon: "https://drifthunters3d.io/assets/upload/poki/webp/drift-hunters.webp"
+    },
+    {
+        name: "Eaglercraft",
+        url: "https://cdn.jsdelivr.net/gh/v10letfur/Eaglercraft-X-1.8.8/EaglercraftX_1.8_u53_Offline_Signed.html",
+        icon: "https://cdn2.steamgriddb.com/icon_thumb/349319c989f70ac97c3824689547bf5d.png"
+    },
+    {
+        name: "Drivemad",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/drivemad.html",
+        icon: "https://cdn-1.webcatalog.io/catalog/poki-drive-mad/poki-drive-mad-icon-filled-256.png?v=1714778298617"
+    },
+    {
+        name: "Snowrider 3D",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/snowrider.html",
+        icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJy4pM2G_0ViLxs6g-mq68YS7RRUv_XUHg4w&s"
+    },
+    {
+        name: "Slope",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/slope.html",
+        icon: "https://slope-play.com/cache/data/image/game/slope-logo-1-f309x309.webp"
+    },
+    {
+        name: "Subway Surfers",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/subwaysurfers.html",
+        icon: "https://static.wikia.nocookie.net/subwaysurf/images/c/c3/ThirtySixthAvatar.jpg/revision/latest/scale-to-width-down/250?cb=20180320175404"
+    },
+    {
+        name: "Buckshot Roulette",
+        url: "https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/index.html",
+        icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQW0pkA7JfrcIexKwRvSuX4EaJw4n2Gf4r2Sw&s"
+    },
+    {
+        name: "Binding Of Isaac",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/bindingofisaac.html",
+        icon: "https://img.tapimg.net/market/images/877d89aad26d46c1ae9934370fc6c22e.jpg"
+    },
+    {
+        name: "Ultra Kill",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/ultrakill.html",
+        icon: "https://cdn2.steamgriddb.com/icon_thumb/ba9353718aa3b1793b8a23d51e19ef15.png"
+    },
+    {
+        name: "Pizza Tower",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/pizzatower.html",
+        icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS27aoYD-jiZcXXqXMiJ-VtOCA2LvvFHUQu3g&s"
+    },
+    {
+        name: "R.E.P.O",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/repo.html",
+        icon: "https://mir-s3-cdn-cf.behance.net/projects/404/cf0349247119641.Y3JvcCw4NjIsNjc1LDE2OCww.jpg"
+    }
 ];
 
-  function openRadialMenu() {
-    menuOpen = true;
-    const rect = btn.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    menu.style.left = cx + "px";
-    menu.style.top = cy + "px";
+// Create buttons
+apps.forEach(app => {
+    const container = document.createElement("div");
+    container.className = "app-container";
 
-    apps.forEach((b, i) => {
-      const angle = (b.dataset.angle * Math.PI) / 180;
-      const r = 90;
-      const x = Math.cos(angle) * r, y = Math.sin(angle) * r;
-      setTimeout(() => {
-        b.style.opacity = "1";
-        b.style.filter = "blur(0px)";
-        b.style.transform = `translate(${x * 1.1}px, ${y * 1.1}px) scale(1.05)`;
-        setTimeout(() => { b.style.transform = `translate(${x}px, ${y}px) scale(1)`; }, 110);
-      }, i * 60);
-    });
-  }
+    const btn = document.createElement("button");
+    btn.className = "app-btn";
+    btn.innerHTML = "";
 
-  function closeRadialMenu() {
-    menuOpen = false;
-    [...apps].reverse().forEach((b, i) => {
-      setTimeout(() => {
-        b.style.opacity = "0";
-        b.style.filter = "blur(6px)";
-        b.style.transform = "translate(0px,0px) scale(0.3)";
-        b._baseTransform = null;
-      }, i * 40);
-    });
-  }
+const img = document.createElement("img");
+img.src = app.icon;
+img.style.width = "100%";
+img.style.height = "100%";
+img.style.objectFit = "cover"; // fills whole button
+img.style.borderRadius = "20px"; // match button
+img.style.pointerEvents = "none";
 
-  // --- DRAG WITH INERTIA ---
-// --- SIDE MENU DRAG ---
-let draggingMenu = false, offsetX = 0, offsetY = 0;
+btn.appendChild(img);
 
-sideMenu.addEventListener("mousedown", e => {
-  draggingMenu = true;
-  offsetX = e.clientX - sideMenu.offsetLeft;
-  offsetY = e.clientY - sideMenu.offsetTop;
+    btn.onclick = async () => {
+    const newWin = window.open("about:blank", "_blank");
+
+    // Show temporary loading screen
+    newWin.document.write(`
+        <html>
+        <body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;font-family:sans-serif;">
+            <h2>Loading ${app.name}...</h2>
+        </body>
+        </html>
+    `);
+    newWin.document.close();
+
+    try {
+        // Fetch the actual HTML from CDN
+        const res = await fetch(app.url);
+        const html = await res.text();
+
+        // Replace about:blank content with fetched HTML
+        newWin.document.open();
+        newWin.document.write(html);
+        newWin.document.close();
+
+    } catch (err) {
+        newWin.document.body.innerHTML = "<h2>Failed to load.</h2>";
+    }
+};
+
+    const label = document.createElement("div");
+    label.className = "label";
+    label.innerText = app.name;
+
+    container.appendChild(btn);
+    container.appendChild(label);
+    grid.appendChild(container);
 });
-
-document.addEventListener("mousemove", e => {
-  if (!draggingMenu) return;
-  sideMenu.style.left = (e.clientX - offsetX) + "px";
-  sideMenu.style.top  = (e.clientY - offsetY) + "px";
-});
-
-document.addEventListener("mouseup", () => draggingMenu = false);
-
-  btn.addEventListener("contextmenu", e => { e.preventDefault(); isDragging = true; lastX = e.clientX; lastY = e.clientY; btn.style.transform = "scale(1.1)"; });
-  document.addEventListener("mousemove", e => {
-    if (!isDragging) return;
-    vx = e.clientX - lastX; vy = e.clientY - lastY;
-    btn.style.left = (btn.offsetLeft + vx) + "px";
-    btn.style.top  = (btn.offsetTop  + vy) + "px";
-    lastX = e.clientX; lastY = e.clientY;
-  });
-  document.addEventListener("mouseup", () => { isDragging = false; btn.style.transform = "scale(1)"; });
-
-  (function inertia() {
-    if (!isDragging) {
-      btn.style.left = (btn.offsetLeft + vx) + "px";
-      btn.style.top  = (btn.offsetTop  + vy) + "px";
-      vx *= 0.91; vy *= 0.91;
-      if (Math.abs(vx) < 0.1) vx = 0;
-      if (Math.abs(vy) < 0.1) vy = 0;
-    }
-    requestAnimationFrame(inertia);
-  })();
-
-  // --- CLICK & HOVER ---
-  btn.addEventListener("mouseenter", () => { isHovered = true; btn.style.boxShadow = "0 6px 20px rgba(0,0,0,0.7)"; });
-  btn.addEventListener("mouseleave", () => { isHovered = false; btn.style.boxShadow = "0 4px 15px rgba(0,0,0,0.5)"; });
-  btn.addEventListener("click", () => menuOpen ? closeRadialMenu() : openRadialMenu());
-
-  // --- KEYBINDS ---
-  document.addEventListener("keydown", e => {
-  if (e.key === "`") {
-  launcherVisible = !launcherVisible;
-
-  if (launcherVisible) {
-    btn.style.display = "flex";
-  } else {
-    btn.style.display = "none";
-    closeRadialMenu();
-    sideMenu.style.display = "none";
-
-    // keep game running
-    // overlay.style.display = "none";
-    // iframe.src = "";
-  }
-}
-
-  if (e.shiftKey && e.key === "`") {
-    if (launcherVisible && isHovered) {
-      launcherVisible = false;
-      btn.style.display = "none";
-      closeRadialMenu();
-      overlay.style.display = "none";
-    } else if (!launcherVisible) {
-      launcherVisible = true;
-      btn.style.display = "flex";
-    }
-  }
-
-  if (e.key === "Escape" && overlay.style.display === "block") {
-    if (++escCount >= 2) {
-      overlay.style.display = "none";
-      iframe.src = "";
-      escCount = 0;
-    }
-  }
-});
-
-  window.addEventListener("message", (event) => {
-    const msg = event.data;
-
-    if (msg.type === "SAVE_GAME") {
-        localStorage.setItem(msg.key, msg.value);
-    }
-
-    if (msg.type === "LOAD_GAME") {
-        const value = localStorage.getItem(msg.key);
-
-        event.source.postMessage({
-            type: "LOAD_GAME_RESPONSE",
-            value
-        }, "*");
-    }
-
-    if (msg.type === "DELETE_GAME") {
-        localStorage.removeItem(msg.key);
-    }
-});
-
-  const SAVE_KEY = "unity_save_data";
-
-// Listen for messages from iframe
-window.addEventListener("message", (event) => {
-    const data = event.data;
-
-    if (!data || !data.type) return;
-
-    // Save game data
-    if (data.type === "SAVE_GAME") {
-        try {
-            localStorage.setItem(SAVE_KEY, JSON.stringify(data.payload));
-            console.log("Game saved");
-        } catch (e) {
-            console.warn("Save failed", e);
-        }
-    }
-
-    // Load request
-    if (data.type === "LOAD_GAME") {
-        const save = localStorage.getItem(SAVE_KEY);
-
-        const iframe = document.getElementById("gameFrame");
-        iframe.contentWindow.postMessage({
-            type: "LOAD_GAME_RESPONSE",
-            payload: save ? JSON.parse(save) : null
-        }, "*");
-    }
-});
-
-})();

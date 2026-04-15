@@ -105,7 +105,7 @@ const apps = [
     {
         name: "Subway Surfers",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/subwaysurfers.html",
-        icon: "https://static.wikia.nocookie.net/subwaysurf/images/c/c3/ThirtySixthAvatar.jpg/revision/latest/scale-to-width-down/250?cb=20180320175404"
+        icon: "https://static.wikia.nocookie.net/subwaysurf/images/c/c3/ThirtySixthAvatar.jpg"
     },
     {
         name: "Buckshot Roulette",

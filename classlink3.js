@@ -157,6 +157,16 @@ const apps = [
         name: "R.E.P.O",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/repo.html",
         icon: "https://mir-s3-cdn-cf.behance.net/projects/404/cf0349247119641.Y3JvcCw4NjIsNjc1LDE2OCww.jpg"
+    },
+    {
+        name: "Tiny Fishing",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/tinyfishing.html",
+        icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUSaM-xzGGbpALJmUrsgJZto33nfHvO5YNpg&s"
+    },
+    {
+        name: "Cookie Clicker",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/cookieclicker.html",
+        icon: "https://play-lh.googleusercontent.com/Z1MOuuiD05ZN5LkVmMEvKF0mqAc-FknaQ2j8s4dZiO-LSPQX4EEA3RVJdlQEtxe96ok"
     }
 ];
 

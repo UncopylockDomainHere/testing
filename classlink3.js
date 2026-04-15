@@ -182,6 +182,11 @@ const apps = [
         name: "Baldis-plus",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/baldi.html",
         icon: "https://play-lh.googleusercontent.com/EPV1TB4So1lB0DGrdCVExDpNU8ML67nd8OqBeoOIM-s6sDicxmDdPvCXD6n7LKevFl0"
+    },
+    {
+        name: "Getting Over It",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/getting-over-it.html",
+        icon: "https://play-lh.googleusercontent.com/xEDOZ9oZZrHswGxUR3w55e4XL9nF2r9HQpmpBO2iGsX3EbCstxawIpZB-EykrCPl6c0"
     }
 ];
 

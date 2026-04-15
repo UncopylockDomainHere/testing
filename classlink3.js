@@ -179,7 +179,7 @@ const apps = [
         icon: "https://i.pinimg.com/736x/33/48/8a/33488a03a8ec1fb8f79d4800e5d17dcf.jpg"
     },
     {
-        name: "Baldis Basics",
+        name: "Baldis-plus",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/baldi.html",
         icon: "https://play-lh.googleusercontent.com/EPV1TB4So1lB0DGrdCVExDpNU8ML67nd8OqBeoOIM-s6sDicxmDdPvCXD6n7LKevFl0"
     }

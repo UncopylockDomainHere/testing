@@ -7,24 +7,44 @@ style.textContent = `
         font-family: Arial, sans-serif;
         overflow: hidden;
     }
+        
 
     .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, 5%);
-        gap: 13.5%;
+        grid-template-columns: repeat(auto-fill, 150px); 
+        gap: 40px;
         padding: 20px;
-        justify-content: start; /* LEFT aligned like Android */
-        align-content: start;
+        justify-content: center;
+        align-content: center;
+        box-sizing: border-box;
     }
+
+    #searchBar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    background: #1e293b;
+    color: white;
+    z-index: 100;
+}
+
+#searchBar::placeholder {
+    color: #94a3b8;
+}
 
     .app-container {
         text-align: center;
-        width: 80px;
+        width: 100px;
     }
 
     .app-btn {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         border-radius: 20px;
         border: none;
         background: linear-gradient(145deg, #1e293b, #334155);
@@ -53,7 +73,7 @@ style.textContent = `
 
     .label {
         margin-top: 6px;
-        font-size: 12px;
+        font-size: 16px;
         color: #94a3b8;
         word-wrap: break-word;
     }
@@ -105,7 +125,7 @@ const apps = [
     {
         name: "Subway Surfers",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/subwaysurfers.html",
-        icon: "https://static.wikia.nocookie.net/subwaysurf/images/c/c3/ThirtySixthAvatar.jpg"
+        icon: "https://static.wikia.nocookie.net/subwaysurf/images/c/c3/ThirtySixthAvatar.jpg/revision/latest/scale-to-width-down/250?cb=20180320175404"
     },
     {
         name: "Buckshot Roulette",
@@ -135,57 +155,70 @@ const apps = [
 ];
 
 // Create buttons
-apps.forEach(app => {
-    const container = document.createElement("div");
-    container.className = "app-container";
+const grid2 = document.getElementById("appGrid");
 
-    const btn = document.createElement("button");
-    btn.className = "app-btn";
-    btn.innerHTML = "";
+function renderApps(filteredApps) {
+    grid2.innerHTML = "";
 
-const img = document.createElement("img");
-img.src = app.icon;
-img.style.width = "100%";
-img.style.height = "100%";
-img.style.objectFit = "cover"; // fills whole button
-img.style.borderRadius = "20px"; // match button
-img.style.pointerEvents = "none";
+    filteredApps.forEach(app => {
+        const container = document.createElement("div");
+        container.className = "app-container";
 
-btn.appendChild(img);
+        const btn = document.createElement("button");
+        btn.className = "app-btn";
 
-    btn.onclick = async () => {
-    const newWin = window.open("about:blank", "_blank");
+        const img = document.createElement("img");
+        img.src = app.icon;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "20px";
+        img.style.pointerEvents = "none";
 
-    // Show temporary loading screen
-    newWin.document.write(`
-        <html>
-        <body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;font-family:sans-serif;">
-            <h2>Loading ${app.name}...</h2>
-        </body>
-        </html>
-    `);
-    newWin.document.close();
+        btn.appendChild(img);
 
-    try {
-        // Fetch the actual HTML from CDN
-        const res = await fetch(app.url);
-        const html = await res.text();
+        btn.onclick = async () => {
+            const newWin = window.open("about:blank", "_blank");
 
-        // Replace about:blank content with fetched HTML
-        newWin.document.open();
-        newWin.document.write(html);
-        newWin.document.close();
+            newWin.document.write(`
+                <html>
+                <body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;font-family:sans-serif;">
+                    <h2>Loading ${app.name}...</h2>
+                </body>
+                </html>
+            `);
+            newWin.document.close();
 
-    } catch (err) {
-        newWin.document.body.innerHTML = "<h2>Failed to load.</h2>";
-    }
-};
+            try {
+                const res = await fetch(app.url);
+                const html = await res.text();
 
-    const label = document.createElement("div");
-    label.className = "label";
-    label.innerText = app.name;
+                newWin.document.open();
+                newWin.document.write(html);
+                newWin.document.close();
+            } catch (err) {
+                newWin.document.body.innerHTML = "<h2>Failed to load.</h2>";
+            }
+        };
 
-    container.appendChild(btn);
-    container.appendChild(label);
-    grid.appendChild(container);
+        const label = document.createElement("div");
+        label.className = "label";
+        label.innerText = app.name;
+
+        container.appendChild(btn);
+        container.appendChild(label);
+        grid2.appendChild(container);
+    });
+}
+
+renderApps(apps);
+
+document.getElementById("searchBar").addEventListener("input", function () {
+    const searchText = this.value.toLowerCase();
+
+    const filtered = apps.filter(app =>
+        app.name.toLowerCase().includes(searchText)
+    );
+
+    renderApps(filtered);
 });

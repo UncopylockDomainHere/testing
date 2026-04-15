@@ -167,6 +167,11 @@ const apps = [
         name: "Cookie Clicker",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/cookieclicker.html",
         icon: "https://play-lh.googleusercontent.com/Z1MOuuiD05ZN5LkVmMEvKF0mqAc-FknaQ2j8s4dZiO-LSPQX4EEA3RVJdlQEtxe96ok"
+    },
+    {
+        name: "Tiny Fishing",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/tinyfishing.html",
+        icon: "https://lh3.googleusercontent.com/hca11Z4buNnAB96QUDvbm107tF0r5EHZXQ5IwTjjbim83MALr6YfxR6HGafEytvBEkeRPiBsnPhOduvQRdYBjOheOw=s128-rj-sc0x00ffffff"
     }
 ];
 

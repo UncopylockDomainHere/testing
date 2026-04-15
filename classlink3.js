@@ -1,5 +1,5 @@
 // Create base styles
-nconst style = document.createElement("style");
+const style = document.createElement("style");
 style.textContent = `
     body {
         margin: 0;

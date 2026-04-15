@@ -80,11 +80,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-const searchBar = document.createElement("input");
-searchBar.id = "searchBar";
-searchBar.placeholder = "Search games...";
-document.body.appendChild(searchBar);
-
 // Create grid container
 const grid = document.createElement("div");
 grid.className = "grid";

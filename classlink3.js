@@ -172,6 +172,11 @@ const apps = [
         name: "Tiny Fishing",
         url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/tinyfishing.html",
         icon: "https://lh3.googleusercontent.com/hca11Z4buNnAB96QUDvbm107tF0r5EHZXQ5IwTjjbim83MALr6YfxR6HGafEytvBEkeRPiBsnPhOduvQRdYBjOheOw=s128-rj-sc0x00ffffff"
+    },
+    {
+        name: "Paper io",
+        url: "https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/paper/index.html",
+        icon: "https://i.pinimg.com/736x/33/48/8a/33488a03a8ec1fb8f79d4800e5d17dcf.jpg"
     }
 ];
 

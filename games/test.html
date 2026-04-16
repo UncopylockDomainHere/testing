@@ -17,9 +17,41 @@
 	div.emscripten { text-align: center; padding:0; margin: 0;}
 	/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
 	canvas.emscripten { border: 0px none; width:100%; height:100%; padding:0; margin: 0;}
+	#pk3Menu {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 9999;
+}
+
+#pk3Dropdown {
+  background: rgba(0,0,0,0.8);
+  color: white;
+  border: 1px solid #555;
+  padding: 6px;
+  border-radius: 6px;
+}
 	</style>
   </head>
   <body ondrop="gotdrop(event);" ondragover="event.preventDefault()">
+	<div id="pk3Menu">
+  <select id="pk3Dropdown" onchange="handlePK3Select(this)">
+    <option value="">-- Select a NZP Mod --</option>
+
+    <option value="nzp/maps.pk3|https://litter.catbox.moe/ksiigr.pk3">
+      All Maps
+    </option>
+
+    <option value="nzp/custom2.pk3|https://example.com/custom2.pk3">
+      Mod 2
+    </option>
+
+    <option value="nzp/maps/test.pk3|https://example.com/test.pk3">
+      Test Map
+    </option>
+
+  </select>
+</div>
 	<div class="emscripten" id="status">Please allow/unblock our javascript to play.</div>
 	<div id="dropzone" ondrop="gotdrop(event);" ondragover="event.preventDefault()" hidden=1>Drop Zone</div>
 	<button type="button" onclick="begin()" id="begin" hidden=1>Click To Begin!</button>
@@ -186,38 +218,92 @@ function gotdrop(ev)
 		}
 	showfiles();
 }
-if (window.location.hash != "" || Object.keys(Module.files).length)
-	begin();		//if the url has a #foo.fmf then just begin instantly, 
-else
-	showfiles();	//otherwise show our lame file dropper and wait for the user to click 'go'.
-    </script>
+showfiles();
+
+// give user time before auto-start (optional)
+setTimeout(() => {
+	if (!Module.began) {
+		Module.setStatus("Ready to start!");
+	}
+}, 10000); // 10 seconds.
+    </script> 
 	<script>
-		const canvas = document.querySelector("canvas");
+		function handlePK3Select(select) {
+  const value = select.value;
+  if (!value) return;
 
-canvas.addEventListener("click", () => {
-  canvas.requestPointerLock();
-});
+  const [path, url] = value.split("|");
 
-document.addEventListener("pointerlockchange", () => {
-  if (document.pointerLockElement === canvas) {
-    console.log("Pointer locked!");
-  } else {
-    console.log("Pointer unlocked");
+  addPK3(path, url);
+
+  // reset dropdown back to default
+  select.value = "";
+}
+	</script> 
+	<script>
+	function addPK3(path, url) {
+  if (Module.began) {
+    alert("You must add files before starting!");
+    return;
   }
-});
 
-document.addEventListener("mousemove", (e) => {
-  if (document.pointerLockElement === canvas) {
-    const dx = e.movementX;
-    const dy = e.movementY;
+  Module.setStatus("Starting download...");
 
-    // Use dx/dy for camera rotation
-    rotateCamera(dx, dy);
-  }
-});
+  fetch(url).then(response => {
+    const contentLength = response.headers.get('content-length');
 
-function rotateCamera(dx, dy) {
-  // your 3D rotation logic here
+    if (!contentLength) {
+      Module.setStatus("Downloading (size unknown)...");
+      return response.arrayBuffer().then(buf => {
+        Module.files[path] = buf;
+        showfiles();
+        Module.setStatus("Loaded " + path);
+      });
+    }
+
+    const total = parseInt(contentLength, 10);
+    let loaded = 0;
+
+    const reader = response.body.getReader();
+    const chunks = [];
+
+    function read() {
+      reader.read().then(({ done, value }) => {
+        if (done) {
+          // combine chunks
+          const blob = new Uint8Array(loaded);
+          let position = 0;
+
+          for (let chunk of chunks) {
+            blob.set(chunk, position);
+            position += chunk.length;
+          }
+
+          Module.files[path] = blob.buffer;
+          showfiles();
+          Module.setStatus("Loaded " + path);
+          return;
+        }
+
+        chunks.push(value);
+        loaded += value.length;
+
+        // convert to MB
+        const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
+        const totalMB = (total / (1024 * 1024)).toFixed(2);
+
+        Module.setStatus(`Downloading ${path}: ${loadedMB} MB / ${totalMB} MB`);
+
+        read();
+      });
+    }
+
+    read();
+  }).catch(err => {
+    console.error(err);
+    Module.setStatus("Failed to load " + path);
+    alert("Error loading PK3!");
+  });
 }
 	</script>
     <img src="https://hits.sh/hits.sh/nzp-team.github.io/latest/game.html/hits.svg" style="opacity:0;width:0px;">

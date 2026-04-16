@@ -11,18 +11,19 @@ style.textContent = `
 
     .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, 150px); 
+        grid-template-columns: repeat(7, 1fr);
         gap: 40px;
         padding: 20px;
         justify-content: center;
-        align-content: center;
         box-sizing: border-box;
+        height: 95%;
+        overflow-y: auto;
     }
 
     #searchBar {
     position: sticky;
-    top: 0;
-    width: 100%;
+    top: 10px;
+    left: 25%;
     padding: 15px 20px;
     font-size: 18px;
     border: none;
@@ -31,6 +32,8 @@ style.textContent = `
     background: #1e293b;
     color: white;
     z-index: 100;
+    border-radius: 20px;
+    width: 50%;
 }
 
 #searchBar::placeholder {
@@ -39,12 +42,13 @@ style.textContent = `
 
     .app-container {
         text-align: center;
-        width: 100px;
+        width: 125px;
+        margin: 0 auto;
     }
 
     .app-btn {
-        width: 100px;
-        height: 100px;
+        width: 125px;
+        height: 125px;
         border-radius: 20px;
         border: none;
         background: linear-gradient(145deg, #1e293b, #334155);
@@ -73,7 +77,7 @@ style.textContent = `
 
     .label {
         margin-top: 6px;
-        font-size: 16px;
+        font-size: 20px;
         color: #94a3b8;
         word-wrap: break-word;
     }

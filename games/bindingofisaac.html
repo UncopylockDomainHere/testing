@@ -157,36 +157,5 @@ async function importSave(event) {
 }
 </script>
 
-<script>
-  // ✅ AUTO-SAVE HOOK (WORKING)
-(function() {
-  const originalSetItem = localStorage.setItem;
-
-  localStorage.setItem = function(key, value) {
-    console.log("Game saved:", key);
-
-    // normal save
-    originalSetItem.apply(this, arguments);
-
-    // backup after save
-    autoBackup();
-  };
-
-  function autoBackup() {
-    const data = {};
-
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      data[k] = localStorage.getItem(k);
-    }
-
-    // store latest autosave in memory
-    window.latestAutoSave = data;
-
-    console.log("Auto-save updated");
-  }
-})();
-</script>
-
 </body>
 </html>

@@ -11,7 +11,7 @@ style.textContent = `
 
     .grid {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repe(atauto-fit(200px, 1fr));
         gap: 40px;
         padding: 20px;
         justify-content: center;

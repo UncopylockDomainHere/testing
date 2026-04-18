@@ -16,7 +16,7 @@ style.textContent = `
         padding: 20px;
         justify-content: center;
         box-sizing: border-box;
-        height: 95%;
+        height: 500px;
         overflow-y: auto;
     }
 

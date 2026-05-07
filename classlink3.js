@@ -224,6 +224,11 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/crossy-road.html',
     icon: 'https://upload.wikimedia.org/wikipedia/en/7/71/Crossy_Road_icon.jpeg',
   },
+  {
+    name: 'Geometry Dash',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/geometry-dash.html',
+    icon: 'https://static.wikia.nocookie.net/logopedia/images/4/41/Geometry_Dash_Icon.svg/revision/latest?cb=20220220121501',
+  },
 ];
 
 // Create buttons

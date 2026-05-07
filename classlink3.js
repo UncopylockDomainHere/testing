@@ -211,8 +211,13 @@ const apps = [
   },
   {
     name: 'super-hot',
-    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/super-hot.html',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/super-hott.html',
     icon: 'https://fontmeme.com/images/super-hot-game-font.jpg',
+  },
+  {
+    name: 'fruit-ninja',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/fruit-ninja.html',
+    icon: 'https://play-lh.googleusercontent.com/eJ9OJnbRer1jjg5ZeNAnTXKcGd2B_NEqxCp2UsefcCABeFBaj_pNl_WKYBjup2GVGGc',
   },
 ];
 

@@ -209,6 +209,11 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/dumb-ways-to-die.html',
     icon: 'https://yt3.googleusercontent.com/ytc/AIdro_lS_HLx-8hMfveILM_CAmaWxgaOCwBKxb10vi55pPkCteU=s900-c-k-c0x00ffffff-no-rj',
   },
+  {
+    name: 'super-hot',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/super-hot.html',
+    icon: 'https://fontmeme.com/images/super-hot-game-font.jpg',
+  },
 ];
 
 // Create buttons

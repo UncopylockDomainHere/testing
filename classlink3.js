@@ -204,6 +204,11 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/getting-over-it.html',
     icon: 'https://play-lh.googleusercontent.com/xEDOZ9oZZrHswGxUR3w55e4XL9nF2r9HQpmpBO2iGsX3EbCstxawIpZB-EykrCPl6c0',
   },
+  {
+    name: 'Dumb Ways To Die',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/dumb-ways-to-die.html',
+    icon: 'https://yt3.googleusercontent.com/ytc/AIdro_lS_HLx-8hMfveILM_CAmaWxgaOCwBKxb10vi55pPkCteU=s900-c-k-c0x00ffffff-no-rj',
+  },
 ];
 
 // Create buttons

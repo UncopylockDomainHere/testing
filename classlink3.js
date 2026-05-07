@@ -204,6 +204,11 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/getting-over-it.html',
     icon: 'https://play-lh.googleusercontent.com/xEDOZ9oZZrHswGxUR3w55e4XL9nF2r9HQpmpBO2iGsX3EbCstxawIpZB-EykrCPl6c0',
   },
+  {
+    name: 'Fnaf 1',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/fnaf1.html',
+    icon: 'https://play-lh.googleusercontent.com/xEDOZ9oZZrHswGxUR3w55e4XL9nF2r9HQpmpBO2iGsX3EbCstxawIpZB-EykrCPl6c0',
+  },
 ];
 
 // Create buttons

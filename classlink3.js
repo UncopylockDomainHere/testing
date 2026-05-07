@@ -171,7 +171,7 @@ const apps = [
   },
   {
     name: 'R.E.P.O',
-    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/repo.html',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/repo2.html',
     icon: 'https://mir-s3-cdn-cf.behance.net/projects/404/cf0349247119641.Y3JvcCw4NjIsNjc1LDE2OCww.jpg',
   },
   {

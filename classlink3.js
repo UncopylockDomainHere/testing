@@ -210,14 +210,19 @@ const apps = [
     icon: 'https://yt3.googleusercontent.com/ytc/AIdro_lS_HLx-8hMfveILM_CAmaWxgaOCwBKxb10vi55pPkCteU=s900-c-k-c0x00ffffff-no-rj',
   },
   {
-    name: 'super-hot',
+    name: 'Super Hot',
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/super-hott.html',
     icon: 'https://fontmeme.com/images/super-hot-game-font.jpg',
   },
   {
-    name: 'fruit-ninja',
+    name: 'Fruit Ninja',
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/fruit-ninja.html',
     icon: 'https://play-lh.googleusercontent.com/eJ9OJnbRer1jjg5ZeNAnTXKcGd2B_NEqxCp2UsefcCABeFBaj_pNl_WKYBjup2GVGGc',
+  },
+  {
+    name: 'Crossy Road',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/crossy-road.html',
+    icon: 'https://upload.wikimedia.org/wikipedia/en/7/71/Crossy_Road_icon.jpeg',
   },
 ];
 

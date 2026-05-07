@@ -207,7 +207,7 @@ const apps = [
   {
     name: 'Fnaf 1',
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/fnaf1.html',
-    icon: 'https://play-lh.googleusercontent.com/xEDOZ9oZZrHswGxUR3w55e4XL9nF2r9HQpmpBO2iGsX3EbCstxawIpZB-EykrCPl6c0',
+    icon: 'https://cdn2.steamgriddb.com/icon_thumb/6aab1270668d8cac7cef2566a1c5f569.png',
   },
 ];
 

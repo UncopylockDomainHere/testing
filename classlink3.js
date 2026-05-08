@@ -19,6 +19,7 @@ style.textContent = `
         overflow-y: auto;
         justify-items: center;
         align-content: start;
+        margin: 20px 0px;
     }
 
     #searchBar {

@@ -15,7 +15,7 @@ style.textContent = `
         padding: 20px;
         justify-content: center;
         box-sizing: border-box;
-        min-height: 100vh;
+        max-height: 100vh;
         overflow-y: auto;
         justify-items: center;
         align-content: start;

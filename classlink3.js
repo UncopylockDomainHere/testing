@@ -241,6 +241,16 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-2.html',
     icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/602.png',
   },
+  {
+    name: 'Dead Seat',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/dead-seat.html',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/458.png',
+  },
+  {
+    name: 'Super Mario 64',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/sm64.html',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/588.png',
+  },
 ];
 
 // Create buttons

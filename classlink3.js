@@ -227,17 +227,17 @@ const apps = [
   {
     name: 'Geometry Dash',
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/geometry-dash.html',
-    icon: 'https://static.wikia.nocookie.net/logopedia/images/4/41/Geometry_Dash_Icon.svg/revision/latest?cb=20220220121501',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/785.png',
   },
   {
     name: 'Doom 1',
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-1.html',
-    icon: 'https://static.wikia.nocookie.net/logopedia/images/0/09/Doom_1.gif/revision/latest/scale-to-width-down/1200?cb=20180226150858',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/203.png',
   },
   {
     name: 'Doom 2',
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-2.html',
-    icon: 'https://static.wikia.nocookie.net/logopedia/images/d/d8/DoomII.png/revision/latest?cb=20180308083509',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/602.png',
   },
 ];
 

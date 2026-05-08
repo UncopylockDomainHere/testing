@@ -20,6 +20,7 @@ style.textContent = `
         justify-items: center;
         align-content: start;
         margin: 20px 0px;
+        background: #171d33;
     }
 
     #searchBar {

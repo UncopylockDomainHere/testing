@@ -251,6 +251,16 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/sm64.html',
     icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/588.png',
   },
+  {
+    name: 'Jetpack Joyride',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/jj.html',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/7.png',
+  },
+  {
+    name: 'Crazy Cattle 3D',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/crazy-cattle-3d.html',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/164.png',
+  },
 ];
 
 // Create buttons

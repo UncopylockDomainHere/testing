@@ -239,11 +239,6 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-2.html',
     icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/602.png',
   },
-  {
-    name: 'Doom 2',
-    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-2.html',
-    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/602.png',
-  },
 ];
 
 // Create buttons

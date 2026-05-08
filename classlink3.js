@@ -158,7 +158,7 @@ const apps = [
   },
   {
     name: 'Binding Of Isaac',
-    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/bindingofisaac.html',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/binding-of-isaac.html',
     icon: 'https://img.tapimg.net/market/images/877d89aad26d46c1ae9934370fc6c22e.jpg',
   },
   {

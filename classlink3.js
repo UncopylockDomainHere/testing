@@ -261,6 +261,11 @@ const apps = [
     url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/crazy-cattle-3d.html',
     icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/164.png',
   },
+  {
+    name: 'Yume Nikki',
+    url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/nikki.html',
+    icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/433.png',
+  },
 ];
 
 // Create buttons

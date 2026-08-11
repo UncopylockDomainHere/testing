@@ -816,7 +816,7 @@ const apps = [
   { name: 'Crazy Cattle 3D', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/crazy-cattle-3d.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/164.png' },
   { name: 'Yume Nikki', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/nikki.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/433.png' },
   { name: 'CSGO', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/csgo.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6bznqalhYEF60S4VbKOscF0wg2LKJiiPJIngyn4QmRg&s=10', status: 'unavailable', statusNote: 'Not playable yet' },
-  { name: 'Running Fred', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/rf.html', icon: 'https://static.wikia.nocookie.net/logopedia/images/2/28/Older_version_of_the_Running_Fred_game_app_icon.png/revision/latest/scale-to-width-down/1200?cb=20250802180826' },
+  { name: 'Running Fred', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/rf.html', icon: 'https://play-lh.googleusercontent.com/hav5Nt4gJoYyU2mafL8q8xZqFXXuv8XfG79MjnuempxtqxoBs99T584T5ife41qG7scu0zgFAm152w_gEP3u' },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

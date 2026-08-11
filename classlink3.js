@@ -1,11 +1,11 @@
-// ╔══════════════════════════════════════════════════════════════════╗
+// ╔══════════════════════════════════════════════════════════════════════════════╗
 // ║   CLASSLINK // GHOST-GRID EDITION                                  ║
 // ║   a cyber/hacker game launcher — glass, glow, scanlines & vibes    ║
-// ╚══════════════════════════════════════════════════════════════════╝
+// ╚══════════════════════════════════════════════════════════════════════════════╝
 
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // 0. Inject base styles (fonts, animated background, HUD, glass, glow)
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 const style = document.createElement('style');
 style.textContent = `
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -17,6 +17,7 @@ style.textContent = `
         --magenta:#ff2bd6;
         --lime:#39ff14;
         --violet:#7b5cff;
+        --gold:#ffd23f;
         --grid-line:rgba(0,240,255,.06);
         --glass:rgba(10,16,28,.55);
         --glass-brd:rgba(0,240,255,.22);
@@ -78,7 +79,7 @@ style.textContent = `
     /* everything sits above the backdrop */
     .ui-layer{ position:relative; z-index:10; }
 
-    /* ── top status bar (HUD) ───────────────────────────────────── */
+    /* ── top status bar (HUD) ──────────────────────────────────────────── */
     .hud{
         position:sticky; top:0; z-index:90;
         display:flex; align-items:center; justify-content:space-between;
@@ -106,7 +107,155 @@ style.textContent = `
     @keyframes blink{ 0%,49%{opacity:1} 50%,100%{opacity:0} }
     @keyframes flicker{ 0%,97%,100%{opacity:1} 98%{opacity:.4} 99%{opacity:.8} }
 
-    /* ── search bar ─────────────────────────────────────────────── */
+    /* ── hamburger button (3 lines) — top-left, under the HUD ─────────── */
+    .hamburger{
+        position:fixed; top:78px; left:22px; z-index:85;
+        width:46px; height:46px; border-radius:12px;
+        background:var(--glass);
+        border:1px solid var(--glass-brd);
+        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+        box-shadow:0 6px 22px rgba(0,0,0,.5), 0 0 16px rgba(0,240,255,.18);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:6px; cursor:pointer;
+        transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+    .hamburger:hover{
+        border-color:rgba(0,240,255,.7);
+        box-shadow:0 6px 22px rgba(0,0,0,.5), 0 0 26px rgba(0,240,255,.5);
+        transform:scale(1.07);
+    }
+    .hamburger .line{
+        width:22px; height:2.5px; border-radius:3px;
+        background:var(--cyan); box-shadow:0 0 8px rgba(0,240,255,.7);
+        transition:transform .3s ease, opacity .25s ease;
+    }
+    .hamburger.active .line:nth-child(1){ transform:translateY(8.5px) rotate(45deg); }
+    .hamburger.active .line:nth-child(2){ opacity:0; transform:scaleX(0); }
+    .hamburger.active .line:nth-child(3){ transform:translateY(-8.5px) rotate(-45deg); }
+
+    /* ── slide-in side menu ───────────────────────────────────────────── */
+    .side-menu{
+        position:fixed; top:0; left:0; bottom:0; z-index:95;
+        width:300px; max-width:84vw;
+        background:linear-gradient(180deg, rgba(8,12,22,.96), rgba(5,7,13,.96));
+        border-right:1px solid rgba(0,240,255,.28);
+        box-shadow:18px 0 60px rgba(0,0,0,.7), 0 0 40px rgba(0,240,255,.12);
+        backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+        transform:translateX(-105%);
+        transition:transform .42s cubic-bezier(.2,.85,.25,1);
+        display:flex; flex-direction:column;
+        padding:24px 0 24px;
+    }
+    .side-menu.open{ transform:translateX(0); }
+    .side-menu .sm-head{
+        display:flex; align-items:center; justify-content:space-between;
+        padding:0 24px 22px; border-bottom:1px solid rgba(0,240,255,.14);
+    }
+    .side-menu .sm-title{
+        font-family:'Orbitron',sans-serif; font-weight:900; font-size:16px;
+        letter-spacing:.28em; text-transform:uppercase;
+        background:linear-gradient(90deg,var(--cyan),var(--magenta));
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        filter:drop-shadow(0 0 8px rgba(0,240,255,.4));
+    }
+    .side-menu .sm-close{
+        width:32px; height:32px; border-radius:8px; cursor:pointer;
+        background:rgba(0,240,255,.06); border:1px solid rgba(0,240,255,.2);
+        color:var(--cyan); font-size:18px; line-height:1;
+        display:flex; align-items:center; justify-content:center;
+        transition:background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .side-menu .sm-close:hover{ background:rgba(0,240,255,.18); border-color:rgba(0,240,255,.6); transform:rotate(90deg); }
+    .side-menu .sm-list{ display:flex; flex-direction:column; padding:18px 16px; gap:10px; flex:1; }
+    .side-menu .sm-btn{
+        display:flex; align-items:center; gap:14px;
+        padding:14px 18px; border-radius:12px; cursor:pointer;
+        font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500;
+        letter-spacing:.08em; text-transform:uppercase;
+        color:#cfe8ff;
+        background:rgba(0,240,255,.04);
+        border:1px solid rgba(0,240,255,.16);
+        transition:background .22s ease, border-color .22s ease, transform .22s ease, color .22s ease;
+        position:relative; overflow:hidden;
+    }
+    .side-menu .sm-btn .ico{
+        font-size:18px; width:24px; text-align:center; flex-shrink:0;
+        text-shadow:0 0 10px currentColor;
+    }
+    .side-menu .sm-btn .lbl{ flex:1; }
+    .side-menu .sm-btn .badge{
+        font-size:11px; padding:2px 8px; border-radius:10px;
+        background:rgba(0,240,255,.12); color:var(--cyan);
+        border:1px solid rgba(0,240,255,.25); min-width:24px; text-align:center;
+    }
+    .side-menu .sm-btn:hover{
+        background:rgba(0,240,255,.14); border-color:rgba(0,240,255,.55);
+        transform:translateX(6px); color:#fff;
+        box-shadow:0 0 22px rgba(0,240,255,.25);
+    }
+    .side-menu .sm-btn.active{
+        background:linear-gradient(90deg, rgba(0,240,255,.22), rgba(123,92,255,.14));
+        border-color:rgba(0,240,255,.7); color:#fff;
+    }
+    .side-menu .sm-btn[data-view="liked"]:hover{ box-shadow:0 0 22px rgba(255,43,214,.3); border-color:rgba(255,43,214,.55); }
+    .side-menu .sm-btn[data-view="liked"] .ico{ color:var(--magenta); }
+    .side-menu .sm-btn[data-view="liked"] .badge{ color:var(--magenta); background:rgba(255,43,214,.14); border-color:rgba(255,43,214,.3); }
+    .side-menu .sm-btn[data-view="favorite"]:hover{ box-shadow:0 0 22px rgba(255,210,63,.3); border-color:rgba(255,210,63,.55); }
+    .side-menu .sm-btn[data-view="favorite"] .ico{ color:var(--gold); }
+    .side-menu .sm-btn[data-view="favorite"] .badge{ color:var(--gold); background:rgba(255,210,63,.14); border-color:rgba(255,210,63,.3); }
+    .side-menu .sm-btn[data-view="games"] .ico{ color:var(--cyan); }
+    .side-menu .sm-foot{
+        padding:16px 24px; border-top:1px solid rgba(0,240,255,.14);
+        font-size:10px; letter-spacing:.2em; color:#44608a; text-transform:uppercase;
+    }
+
+    /* dim overlay when menu open */
+    .sm-overlay{
+        position:fixed; inset:0; z-index:92;
+        background:rgba(0,0,0,.5);
+        backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+        opacity:0; visibility:hidden;
+        transition:opacity .35s ease, visibility .35s ease;
+    }
+    .sm-overlay.show{ opacity:1; visibility:visible; }
+
+    /* ── right-click context menu ─────────────────────────────────────── */
+    .ctx-menu{
+        position:fixed; z-index:200; min-width:190px;
+        background:linear-gradient(180deg, rgba(10,16,28,.97), rgba(6,10,18,.97));
+        border:1px solid rgba(0,240,255,.4);
+        border-radius:12px; padding:8px;
+        box-shadow:0 14px 44px rgba(0,0,0,.7), 0 0 28px rgba(0,240,255,.25);
+        backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+        opacity:0; transform:scale(.9) translateY(-6px); transform-origin:top left;
+        pointer-events:none;
+        transition:opacity .16s ease, transform .16s ease;
+    }
+    .ctx-menu.show{ opacity:1; transform:scale(1) translateY(0); pointer-events:auto; }
+    .ctx-menu .ctx-head{
+        font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:.22em;
+        text-transform:uppercase; color:#5b7a9e; padding:6px 12px 8px;
+        border-bottom:1px solid rgba(0,240,255,.12); margin-bottom:6px;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px;
+    }
+    .ctx-menu .ctx-item{
+        display:flex; align-items:center; gap:12px;
+        padding:10px 12px; border-radius:8px; cursor:pointer;
+        font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500;
+        letter-spacing:.04em; color:#cfe8ff;
+        transition:background .16s ease, color .16s ease, padding-left .16s ease;
+        white-space:nowrap;
+    }
+    .ctx-menu .ctx-item .ico{ font-size:15px; width:18px; text-align:center; flex-shrink:0; }
+    .ctx-menu .ctx-item:hover{ background:rgba(0,240,255,.16); color:#fff; padding-left:16px; }
+    .ctx-menu .ctx-item[data-act="like"] .ico{ color:var(--magenta); }
+    .ctx-menu .ctx-item[data-act="favorite"] .ico{ color:var(--gold); }
+    .ctx-menu .ctx-item[data-act="games"] .ico{ color:var(--cyan); }
+    .ctx-menu .ctx-item.on{ color:var(--lime); }
+    .ctx-menu .ctx-item.on .ico{ color:var(--lime); text-shadow:0 0 8px var(--lime); }
+    .ctx-menu .ctx-sep{ height:1px; background:rgba(0,240,255,.12); margin:6px 4px; }
+
+    /* ── search bar ───────────────────────────────────────────────────── */
     .search-wrap{
         position:sticky; top:62px; z-index:80;
         display:flex; justify-content:center;
@@ -151,7 +300,39 @@ style.textContent = `
         color:#5b7a9e; pointer-events:none;
     }
 
-    /* ── grid of tiles ──────────────────────────────────────────── */
+    /* ── page view header (for liked / favorite pages) ────────────────── */
+    .view-head{
+        display:flex; flex-direction:column; align-items:center; gap:18px;
+        padding:34px 20px 8px; text-align:center;
+    }
+    .view-head .vh-title{
+        font-family:'Orbitron',sans-serif; font-weight:900; font-size:26px;
+        letter-spacing:.22em; text-transform:uppercase;
+        background:linear-gradient(90deg,var(--cyan),var(--magenta));
+        -webkit-background-clip:text; background-clip:text; color:transparent;
+        filter:drop-shadow(0 0 12px rgba(0,240,255,.4));
+    }
+    .view-head .vh-sub{
+        font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+        color:#5b7a9e;
+    }
+    .view-head .back-btn{
+        display:inline-flex; align-items:center; gap:10px;
+        padding:12px 26px; border-radius:12px; cursor:pointer;
+        font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600;
+        letter-spacing:.12em; text-transform:uppercase; color:var(--cyan);
+        background:rgba(0,240,255,.08);
+        border:1px solid rgba(0,240,255,.35);
+        box-shadow:0 0 18px rgba(0,240,255,.18);
+        transition:background .22s ease, border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+    }
+    .view-head .back-btn:hover{
+        background:rgba(0,240,255,.2); border-color:rgba(0,240,255,.7);
+        transform:translateY(-2px); box-shadow:0 0 28px rgba(0,240,255,.45);
+    }
+    .view-head .back-btn:active{ transform:translateY(0); }
+
+    /* ── grid of tiles ────────────────────────────────────────────────── */
     .grid{
         display:grid;
         grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
@@ -193,6 +374,25 @@ style.textContent = `
     .app-btn::before{ top:7px; left:7px; border-right:none; border-bottom:none; border-top-left-radius:6px; }
     .app-btn::after{ bottom:7px; right:7px; border-left:none; border-top:none; border-bottom-right-radius:6px; }
 
+    /* like / favorite badges on tiles */
+    .tile-badge{
+        position:absolute; top:8px; right:8px; z-index:6;
+        width:26px; height:26px; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        font-size:13px; pointer-events:none;
+        opacity:0; transform:scale(.4);
+        transition:opacity .3s ease, transform .3s ease;
+    }
+    .tile-badge.show{ opacity:1; transform:scale(1); }
+    .tile-badge.liked{
+        background:rgba(255,43,214,.85); color:#fff;
+        box-shadow:0 0 12px rgba(255,43,214,.7);
+    }
+    .tile-badge.favorited{
+        background:rgba(255,210,63,.9); color:#1a1400;
+        box-shadow:0 0 12px rgba(255,210,63,.7);
+    }
+
     /* moving scanline sheen across the tile */
     .app-btn .sheen{
         position:absolute; inset:0; z-index:2; pointer-events:none;
@@ -224,6 +424,13 @@ style.textContent = `
 
     .app-btn:active{ transform:translateY(-4px) scale(.98); }
 
+    /* hint to right-click */
+    .app-container .rc-hint{
+        font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+        color:#3d5675; opacity:0; transition:opacity .25s ease;
+    }
+    .app-container:hover .rc-hint{ opacity:1; }
+
     .label{
         font-size:13px; letter-spacing:.06em; font-weight:500;
         color:#9fb8d6; max-width:180px;
@@ -240,6 +447,7 @@ style.textContent = `
         font-size:14px; text-transform:uppercase;
     }
     .empty span{ color:var(--magenta); text-shadow:0 0 14px rgba(255,43,214,.6); }
+    .empty .big{ display:block; font-size:42px; margin-bottom:16px; opacity:.5; }
 
     /* boot splash */
     #boot{
@@ -259,9 +467,9 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // 1. Boot splash (fake terminal boot — the "hacky" vibe)
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 const boot = document.createElement('div');
 boot.id = 'boot';
 boot.innerHTML = `
@@ -287,9 +495,9 @@ setTimeout(() => {
   setTimeout(() => boot.remove(), 700);
 }, 1150);
 
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // 2. Animated background canvas (drifting particles + drifting hex)
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 const bgCanvas = document.createElement('canvas');
 bgCanvas.id = 'bgCanvas';
 document.body.insertBefore(bgCanvas, document.body.firstChild);
@@ -363,9 +571,9 @@ document.body.appendChild(scan);
   draw();
 })();
 
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // 3. HUD bar
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 const uiLayer = document.createElement('div');
 uiLayer.className = 'ui-layer';
 document.body.appendChild(uiLayer);
@@ -391,9 +599,68 @@ function tickClock() {
 }
 setInterval(tickClock, 1000); tickClock();
 
-// ───────────────────────────────────────────────────────────────────
-// 4. Search bar
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. Hamburger button (3 lines) — top-left, under the HUD
+// ─────────────────────────────────────────────────────────────────────────────
+const hamburger = document.createElement('div');
+hamburger.className = 'hamburger';
+hamburger.title = 'open menu';
+hamburger.setAttribute('aria-label', 'menu');
+hamburger.innerHTML = `<span class="line"></span><span class="line"></span><span class="line"></span>`;
+document.body.appendChild(hamburger);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. Slide-in side menu
+// ─────────────────────────────────────────────────────────────────────────────
+const smOverlay = document.createElement('div');
+smOverlay.className = 'sm-overlay';
+document.body.appendChild(smOverlay);
+
+const sideMenu = document.createElement('div');
+sideMenu.className = 'side-menu';
+sideMenu.innerHTML = `
+    <div class="sm-head">
+        <div class="sm-title">MENU</div>
+        <div class="sm-close" id="smClose">✕</div>
+    </div>
+    <div class="sm-list">
+        <div class="sm-btn" data-view="games">
+            <span class="ico">▦</span>
+            <span class="lbl">Games</span>
+            <span class="badge" id="badgeGames">--</span>
+        </div>
+        <div class="sm-btn" data-view="liked">
+            <span class="ico">♥</span>
+            <span class="lbl">Liked Games</span>
+            <span class="badge" id="badgeLiked">0</span>
+        </div>
+        <div class="sm-btn" data-view="favorite">
+            <span class="ico">★</span>
+            <span class="lbl">Favorite Games</span>
+            <span class="badge" id="badgeFav">0</span>
+        </div>
+    </div>
+    <div class="sm-foot">CLASSLINK // GHOST-GRID</div>
+`;
+document.body.appendChild(sideMenu);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. Right-click context menu (shared, repositioned per click)
+// ─────────────────────────────────────────────────────────────────────────────
+const ctxMenu = document.createElement('div');
+ctxMenu.className = 'ctx-menu';
+ctxMenu.innerHTML = `
+    <div class="ctx-head" id="ctxHead">game</div>
+    <div class="ctx-item" data-act="games"><span class="ico">▦</span>Games</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" data-act="like"><span class="ico">♥</span><span id="ctxLikeLabel">Like game</span></div>
+    <div class="ctx-item" data-act="favorite"><span class="ico">★</span><span id="ctxFavLabel">Favorite game</span></div>
+`;
+document.body.appendChild(ctxMenu);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. Search bar
+// ─────────────────────────────────────────────────────────────────────────────
 const searchWrap = document.createElement('div');
 searchWrap.className = 'search-wrap';
 searchWrap.innerHTML = `
@@ -404,17 +671,26 @@ uiLayer.appendChild(searchWrap);
 const searchBar = document.getElementById('searchBar');
 const searchCount = document.getElementById('searchCount');
 
-// ───────────────────────────────────────────────────────────────────
-// 5. Grid container
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. View header (shown on liked / favorite pages — includes "Games" back btn)
+// ─────────────────────────────────────────────────────────────────────────────
+const viewHead = document.createElement('div');
+viewHead.className = 'view-head';
+viewHead.id = 'viewHead';
+viewHead.style.display = 'none';
+uiLayer.appendChild(viewHead);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. Grid container
+// ─────────────────────────────────────────────────────────────────────────────
 const grid = document.createElement('div');
 grid.className = 'grid';
 grid.id = 'appGrid';
 uiLayer.appendChild(grid);
 
-// ───────────────────────────────────────────────────────────────────
-// 6. App list (UNCHANGED — same names, urls, icons)
-// ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// 10. App list (UNCHANGED — same names, urls, icons)
+// ─────────────────────────────────────────────────────────────────────────────
 const apps = [
   { name: 'NZ:P', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/test.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNIW09jfdkiAfWAQ81HXZaDwktgfgywV4p5w&s' },
   { name: 'Serious Sam', url: 'https://cdn.jsdelivr.net/gh/prokid8467-collab/serious/local/index.html', icon: 'https://i.ebayimg.com/00/s/MTI1MFgxMjAw/z/KCwAAOSwYwJlINmB/$_57.JPG?set_id=880000500F' },
@@ -441,7 +717,7 @@ const apps = [
   { name: 'Crossy Road', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/crossy-road.html', icon: 'https://upload.wikimedia.org/wikipedia/en/7/71/Crossy_Road_icon.jpeg' },
   { name: 'Geometry Dash', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/geometry-dash.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/785.png' },
   { name: 'Doom 1', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-1.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/203.png' },
-  { name: 'Doom 2', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/doom-2.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/602.png' },
+  { name: 'Doom 2', url: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/602.png' },
   { name: 'Dead Seat', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/dead-seat.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/458.png' },
   { name: 'Super Mario 64', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/sm64.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/588.png' },
   { name: 'Jetpack Joyride', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/jj.html', icon: 'https://cdn.jsdelivr.net/gh/freebuisness/covers@main/7.png' },
@@ -450,11 +726,98 @@ const apps = [
   { name: 'CSGO', url: 'https://cdn.jsdelivr.net/gh/UncopylockDomainHere/testing/games/csgo.html', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6bznqalhYEF60S4VbKOscF0wg2LKJiiPJIngyn4QmRg&s=10' },
 ];
 
-// ───────────────────────────────────────────────────────────────────
-// 7. Render tiles (with stagger animation + glow)
-// ───────────────────────────────────────────────────────────────────
-const grid2 = document.getElementById('appGrid');
+// ─────────────────────────────────────────────────────────────────────────────
+// 11. Liked / Favorite storage (localStorage, keyed by game name)
+// ─────────────────────────────────────────────────────────────────────────────
+const LS_LIKED = 'classlink_liked';
+const LS_FAV  = 'classlink_favorites';
+
+function loadSet(key) {
+  try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); }
+  catch (e) { return new Set(); }
+}
+function saveSet(key, set) {
+  try { localStorage.setItem(key, JSON.stringify([...set])); } catch (e) {}
+}
+
+let likedSet = loadSet(LS_LIKED);
+let favSet   = loadSet(LS_FAV);
+
+function isLiked(name){ return likedSet.has(name); }
+function isFav(name){ return favSet.has(name); }
+
+function toggleLike(name){
+  if (likedSet.has(name)) likedSet.delete(name);
+  else likedSet.add(name);
+  saveSet(LS_LIKED, likedSet);
+  refreshBadges();
+}
+function toggleFav(name){
+  if (favSet.has(name)) favSet.delete(name);
+  else favSet.add(name);
+  saveSet(LS_FAV, favSet);
+  refreshBadges();
+}
+
+function refreshBadges() {
+  const bL = document.getElementById('badgeLiked');
+  const bF = document.getElementById('badgeFav');
+  const bG = document.getElementById('badgeGames');
+  if (bL) bL.textContent = likedSet.size;
+  if (bF) bF.textContent = favSet.size;
+  if (bG) bG.textContent = apps.length;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 12. View / page system (games | liked | favorite)
+// ─────────────────────────────────────────────────────────────────────────────
+let currentView = 'games';
 let renderToken = 0;
+
+function setView(view) {
+  currentView = view;
+  // update active state on side menu buttons
+  document.querySelectorAll('.side-menu .sm-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  // search bar only relevant on games page (keep available though)
+  if (view === 'games') {
+    searchWrap.style.display = '';
+    viewHead.style.display = 'none';
+    renderApps(apps.filter(a => a.name.toLowerCase().includes(searchBar.value.toLowerCase())));
+  } else {
+    searchWrap.style.display = 'none';
+    searchBar.value = '';
+    renderViewPage(view);
+  }
+  // close the side menu after navigating
+  closeSideMenu();
+  // scroll to top of new view
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderViewPage(view) {
+  const set = view === 'liked' ? likedSet : favSet;
+  const title = view === 'liked' ? 'Liked Games' : 'Favorite Games';
+  const icon  = view === 'liked' ? '♥' : '★';
+  const color = view === 'liked' ? 'var(--magenta)' : 'var(--gold)';
+
+  viewHead.innerHTML = `
+    <div class="vh-title">${icon} ${title}</div>
+    <div class="vh-sub">${set.size} game${set.size === 1 ? '' : 's'} // right-click a logo on the main grid to manage</div>
+    <div class="back-btn" id="backBtn">▦ Games</div>
+  `;
+  viewHead.style.display = '';
+  document.getElementById('backBtn').onclick = () => setView('games');
+
+  const list = apps.filter(a => set.has(a.name));
+  renderApps(list);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 13. Render tiles (with stagger animation + glow + like/fav badges)
+// ─────────────────────────────────────────────────────────────────────────────
+const grid2 = document.getElementById('appGrid');
 
 function renderApps(filteredApps) {
   const myToken = ++renderToken;
@@ -463,7 +826,10 @@ function renderApps(filteredApps) {
   if (filteredApps.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.innerHTML = `<span>// NO_MATCH</span> — nothing in the grid…`;
+    const inView = currentView !== 'games';
+    empty.innerHTML = inView
+      ? `<span class="big">▢</span><span>// EMPTY</span> — no games here yet`
+      : `<span>// NO_MATCH</span> — nothing in the grid…`;
     grid2.appendChild(empty);
     updateCount(0);
     return;
@@ -479,10 +845,26 @@ function renderApps(filteredApps) {
     btn.className = 'app-btn';
     btn.title = `launch ${app.name}`;
     btn.setAttribute('aria-label', app.name);
+    btn.dataset.name = app.name;
 
     const sheen = document.createElement('div');
     sheen.className = 'sheen';
     btn.appendChild(sheen);
+
+    // like badge (top-right)
+    const likeBadge = document.createElement('div');
+    likeBadge.className = 'tile-badge liked';
+    likeBadge.innerHTML = '♥';
+    if (isLiked(app.name)) likeBadge.classList.add('show');
+    btn.appendChild(likeBadge);
+
+    // favorite badge (below like badge)
+    const favBadge = document.createElement('div');
+    favBadge.className = 'tile-badge favorited';
+    favBadge.innerHTML = '★';
+    favBadge.style.top = (isLiked(app.name) ? '40px' : '8px');
+    if (isFav(app.name)) favBadge.classList.add('show');
+    btn.appendChild(favBadge);
 
     const img = document.createElement('img');
     img.src = app.icon;
@@ -500,6 +882,23 @@ function renderApps(filteredApps) {
       btn.innerHTML += `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Orbitron;font-weight:700;color:#00f0ff;text-shadow:0 0 12px #00f0ff;font-size:18px;z-index:4;letter-spacing:.1em">${app.name.slice(0,10)}</div>`;
     };
     btn.appendChild(img);
+
+    // right-click → context menu near the mouse
+    btn.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      openCtxMenu(e.clientX, e.clientY, app);
+    });
+
+    // also support long-press (touch) for mobile-ish
+    let pressTimer = null;
+    btn.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      pressTimer = setTimeout(() => {
+        openCtxMenu(t.clientX, t.clientY, app);
+      }, 550);
+    }, { passive: true });
+    btn.addEventListener('touchend', () => clearTimeout(pressTimer));
+    btn.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
 
     // launch — unchanged behavior (open about:blank, fetch, write html)
     btn.onclick = async () => {
@@ -534,6 +933,12 @@ function renderApps(filteredApps) {
 
     container.appendChild(btn);
     container.appendChild(label);
+
+    const rcHint = document.createElement('div');
+    rcHint.className = 'rc-hint';
+    rcHint.innerText = 'right-click to manage';
+    container.appendChild(rcHint);
+
     grid2.appendChild(container);
   });
 
@@ -541,19 +946,132 @@ function renderApps(filteredApps) {
 }
 
 function updateCount(n) {
-  searchCount.textContent = `${n} / ${apps.length} NODES`;
+  if (currentView === 'games') {
+    searchCount.textContent = `${n} / ${apps.length} NODES`;
+  } else {
+    searchCount.textContent = '';
+  }
   const nc = document.getElementById('nodeCount');
   if (nc) nc.textContent = apps.length;
 }
 
-// initial render
-renderApps(apps);
+// ─────────────────────────────────────────────────────────────────────────────
+// 14. Context menu logic
+// ─────────────────────────────────────────────────────────────────────────────
+let ctxApp = null;
 
-// ───────────────────────────────────────────────────────────────────
-// 8. Search filtering (unchanged logic, smoother)
-// ───────────────────────────────────────────────────────────────────
+function openCtxMenu(x, y, app) {
+  ctxApp = app;
+  document.getElementById('ctxHead').textContent = app.name;
+
+  // update labels / active state
+  const likeItem = ctxMenu.querySelector('.ctx-item[data-act="like"]');
+  const favItem  = ctxMenu.querySelector('.ctx-item[data-act="favorite"]');
+  const likeLabel = document.getElementById('ctxLikeLabel');
+  const favLabel  = document.getElementById('ctxFavLabel');
+
+  const liked = isLiked(app.name);
+  const faved = isFav(app.name);
+  likeItem.classList.toggle('on', liked);
+  favItem.classList.toggle('on', faved);
+  likeLabel.textContent = liked ? 'Unlike game' : 'Like game';
+  favLabel.textContent  = faved ? 'Unfavorite game' : 'Favorite game';
+
+  // position (keep on-screen)
+  ctxMenu.style.left = '0px';
+  ctxMenu.style.top = '0px';
+  ctxMenu.classList.add('show');
+
+  // measure then reposition
+  requestAnimationFrame(() => {
+    const rect = ctxMenu.getBoundingClientRect();
+    let px = x, py = y;
+    if (px + rect.width > window.innerWidth - 8)  px = window.innerWidth - rect.width - 8;
+    if (py + rect.height > window.innerHeight - 8) py = window.innerHeight - rect.height - 8;
+    if (px < 8) px = 8;
+    if (py < 8) py = 8;
+    ctxMenu.style.left = px + 'px';
+    ctxMenu.style.top  = py + 'px';
+  });
+}
+
+function closeCtxMenu() {
+  ctxMenu.classList.remove('show');
+  ctxApp = null;
+}
+
+// context menu item clicks
+ctxMenu.addEventListener('click', (e) => {
+  const item = e.target.closest('.ctx-item');
+  if (!item || !ctxApp) return;
+  const act = item.dataset.act;
+  const app = ctxApp;
+  if (act === 'games') {
+    setView('games');
+  } else if (act === 'like') {
+    toggleLike(app.name);
+    // re-render current view so badges update
+    rerenderCurrent();
+  } else if (act === 'favorite') {
+    toggleFav(app.name);
+    rerenderCurrent();
+  }
+  closeCtxMenu();
+});
+
+function rerenderCurrent() {
+  if (currentView === 'games') {
+    renderApps(apps.filter(a => a.name.toLowerCase().includes(searchBar.value.toLowerCase())));
+  } else {
+    renderViewPage(currentView);
+  }
+}
+
+// close context menu on outside click / scroll / escape / new right-click
+document.addEventListener('click', (e) => {
+  if (!ctxMenu.contains(e.target)) closeCtxMenu();
+});
+document.addEventListener('contextmenu', (e) => {
+  // if right-clicking outside any app tile, just close the menu (allow native)
+  if (!e.target.closest('.app-btn')) closeCtxMenu();
+});
+window.addEventListener('scroll', closeCtxMenu, true);
+window.addEventListener('blur', closeCtxMenu);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 15. Side menu open / close logic
+// ─────────────────────────────────────────────────────────────────────────────
+function openSideMenu() {
+  sideMenu.classList.add('open');
+  smOverlay.classList.add('show');
+  hamburger.classList.add('active');
+  refreshBadges();
+}
+function closeSideMenu() {
+  sideMenu.classList.remove('open');
+  smOverlay.classList.remove('show');
+  hamburger.classList.remove('active');
+}
+function toggleSideMenu() {
+  if (sideMenu.classList.contains('open')) closeSideMenu();
+  else openSideMenu();
+}
+
+hamburger.addEventListener('click', toggleSideMenu);
+document.getElementById('smClose').addEventListener('click', closeSideMenu);
+smOverlay.addEventListener('click', closeSideMenu);
+
+// side menu button clicks → navigate to views
+document.querySelectorAll('.side-menu .sm-btn').forEach(b => {
+  b.addEventListener('click', () => setView(b.dataset.view));
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 16. Search filtering (unchanged logic, smoother)
+// ─────────────────────────────────────────────────────────────────────────────
 let searchDebounce;
 searchBar.addEventListener('input', function () {
+  if (currentView !== 'games') setView('games');
   clearTimeout(searchDebounce);
   const q = this.value.toLowerCase();
   searchDebounce = setTimeout(() => {
@@ -562,15 +1080,24 @@ searchBar.addEventListener('input', function () {
   }, 90);
 });
 
-// slash focuses search (extra hacky hotkey)
+// hotkeys: slash focuses search, escape clears / closes menus
 addEventListener('keydown', (e) => {
   if (e.key === '/' && document.activeElement !== searchBar) {
     e.preventDefault();
     searchBar.focus();
   }
   if (e.key === 'Escape') {
+    if (ctxMenu.classList.contains('show')) { closeCtxMenu(); return; }
+    if (sideMenu.classList.contains('open')) { closeSideMenu(); return; }
+    if (currentView !== 'games') { setView('games'); return; }
     searchBar.value = '';
     renderApps(apps);
     searchBar.blur();
   }
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 17. Initial render
+// ─────────────────────────────────────────────────────────────────────────────
+refreshBadges();
+renderApps(apps);
